@@ -43,7 +43,13 @@ class PlaylistVerification {
 		long started = System.currentTimeMillis();
 		try {
 			List<TrackVerifier.Outcome> outcomes = verifier.verify(suggestions);
-			finish(playlistId, playlist -> playlist.finishVerification(VerificationStatus.VERIFIED, outcomes));
+			finish(playlistId, playlist -> {
+				// Remoção gravada antes das inserções: numa reverificação as mesmas faixas voltam,
+				// e o Hibernate executa inserts antes de deletes no mesmo flush.
+				playlist.clearTracksForReverification();
+				playlists.flush();
+				playlist.finishVerification(VerificationStatus.VERIFIED, outcomes);
+			});
 			long matched = outcomes.stream().filter(o -> o.status() == PlaylistRecommendation.MatchStatus.MATCHED).count();
 			log.info("Playlist {} verificada em {} ms: {} de {} sugestões encontradas", playlistId,
 					System.currentTimeMillis() - started, matched, suggestions.size());

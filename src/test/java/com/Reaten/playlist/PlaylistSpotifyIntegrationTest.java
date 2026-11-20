@@ -142,6 +142,22 @@ class PlaylistSpotifyIntegrationTest {
 	}
 
 	@Test
+	void reverifyingAnAlreadyVerifiedPlaylistReplacesItsTracks() throws Exception {
+		// Regressão: as mesmas faixas voltando violavam (playlist, spotify_track_id), porque o Hibernate
+		// inseria as novas antes de apagar as antigas.
+		Cookie session = register("reverifica@exemplo.com");
+		JsonNode ready = generate(session);
+		String id = ready.path("id").asString();
+
+		for (int round = 0; round < 2; round++) {
+			mvc.perform(post("/api/playlists/" + id + "/verify").with(csrf()).cookie(session))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.verificationStatus").value("VERIFIED"))
+					.andExpect(jsonPath("$.tracks.length()").value(10));
+		}
+	}
+
+	@Test
 	void editingRemovingAndReplacingTracks() throws Exception {
 		Cookie session = register("edita@exemplo.com");
 		JsonNode ready = generate(session);

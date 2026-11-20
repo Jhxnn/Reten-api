@@ -22,7 +22,7 @@ import com.Reaten.playlist.PlaylistRecommendation.MatchStatus;
 /**
  * Procura cada sugestão da IA no catálogo real.
  * <ol>
- * <li>Busca de campo: {@code track:"título" artist:"artista"} (até 5 resultados).</li>
+ * <li>Busca de campo: {@code track:"título" artist:"artista"} (até 10 resultados, para a gravação original ter chance de aparecer).</li>
  * <li>Se não houver correspondência, busca livre {@code título artista} (até 10).</li>
  * </ol>
  * Poucas buscas em paralelo, porque a cota da Spotify em Development Mode é compartilhada pelo app inteiro.
@@ -92,7 +92,7 @@ class TrackVerifier {
 		String title = sanitize(suggestion.title());
 		String artist = sanitize(suggestion.artist());
 		Optional<TrackMatcher.Match> match = matcher.bestMatch(suggestion.title(), suggestion.artist(),
-				catalog.searchTracks("track:\"" + title + "\" artist:\"" + artist + "\"", 5));
+				catalog.searchTracks("track:\"" + title + "\" artist:\"" + artist + "\"", 10));
 		if (match.isEmpty()) {
 			match = matcher.bestMatch(suggestion.title(), suggestion.artist(), catalog.searchTracks(title + " " + artist, 10));
 		}

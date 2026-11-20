@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
  * Regra: o artista sugerido precisa estar entre os artistas da faixa E o título precisa bater
  * depois de normalizado (acentos, maiúsculas, pontuação e sufixos como "Remastered 2011" ou "Live").
  * Na dúvida, não há correspondência — uma sugestão sem faixa é melhor que uma faixa errada.
+ * Entre vários candidatos válidos, prefere a gravação original (ver {@link #score}).
  */
 @Component
 public class TrackMatcher {
@@ -38,26 +39,90 @@ public class TrackMatcher {
 
 	/** Versões que mudam a experiência e só valem se a própria sugestão pedir por elas. */
 	private static final List<String> ALTERED_VERSIONS = List.of("live", "ao vivo", "karaoke", "instrumental", "cover", "remix",
-			"acoustic", "acustico", "sped up", "slowed", "8 bit", "lullaby");
+			"acoustic", "acustico", "sped up", "slowed", "8 bit", "lullaby", "orchestral", "orchestra version", "performed on",
+			"piano version", "solo piano", "rework", "reworked", "reimagined", "arrangement", "arranged");
 
+	/**
+	 * Álbuns de regravação, tributo e "no estilo de": a faixa traz o compositor original nos créditos,
+	 * mas não é a gravação que a IA sugeriu. Só são aceitos se não houver nenhuma outra opção.
+	 */
+	private static final List<String> RERECORDING_ALBUMS = List.of("tribute", "tributo", "homenagem", "cover", "covers",
+			"karaoke", "made famous", "originally performed", "in the style of", "as performed by", "imitation", "renditions",
+			"lullaby", "8 bit", "piano versions", "string quartet tribute", "plays the music of", "inspired by");
+
+	/**
+	 * Escolhe, entre os resultados do catálogo, a gravação que melhor corresponde à sugestão.
+	 * Todos os candidatos válidos (artista presente, título equivalente) são pontuados:
+	 * título exato, artista sugerido como primeiro crédito e poucos artistas extras sobem;
+	 * álbuns de regravação/tributo descem. Em empate, vale a ordem de relevância do catálogo.
+	 */
 	public Optional<Match> bestMatch(String title, String artist, List<CatalogTrack> candidates) {
 		String wantedTitle = normalizeTitle(title);
 		String wantedArtist = normalize(artist);
 		String rawWanted = normalize(title);
 		Match best = null;
+		int bestScore = Integer.MIN_VALUE;
 		for (CatalogTrack candidate : candidates) {
 			if (!artistMatches(wantedArtist, candidate.artists()) || introducesAlteredVersion(rawWanted, normalize(candidate.name()))) {
 				continue;
 			}
-			String candidateTitle = normalizeTitle(candidate.name());
-			if (candidateTitle.equals(wantedTitle)) {
-				return Optional.of(new Match(candidate, Confidence.EXACT));
+			Set<String> variants = titleVariants(candidate.name());
+			boolean exact = variants.contains(wantedTitle);
+			if (!exact && variants.stream().noneMatch(v -> titlesEquivalent(wantedTitle, v))) {
+				continue;
 			}
-			if (best == null && titlesEquivalent(wantedTitle, candidateTitle)) {
-				best = new Match(candidate, Confidence.HIGH);
+			int score = score(exact, wantedArtist, rawWanted, candidate);
+			if (score > bestScore) {
+				bestScore = score;
+				best = new Match(candidate, exact ? Confidence.EXACT : Confidence.HIGH);
 			}
 		}
 		return Optional.ofNullable(best);
+	}
+
+	private static final Pattern BRACKETS = Pattern.compile("[\\(\\[]([^\\)\\]]*)[\\)\\]]");
+
+	/**
+	 * Formas sob as quais o título de uma faixa do catálogo pode corresponder à sugestão:
+	 * o título normalizado; sem os trechos entre parênteses/colchetes; o conteúdo desses trechos
+	 * ("New Moon (The Meadow)" → "meadow"); e a primeira parte antes de " - "
+	 * ("The Gravel Road - Score" → "gravel road"). Só a primeira parte do hífen conta, porque partes
+	 * seguintes costumam ser descrições genéricas ("... - Main Title").
+	 */
+	static Set<String> titleVariants(String name) {
+		Set<String> variants = new java.util.LinkedHashSet<>();
+		String lower = stripAccents(name.toLowerCase(Locale.ROOT));
+		variants.add(normalizeTitle(name));
+		variants.add(clean(BRACKETS.matcher(lower).replaceAll(" ")));
+		java.util.regex.Matcher inner = BRACKETS.matcher(lower);
+		while (inner.find()) {
+			variants.add(clean(inner.group(1)));
+		}
+		int dash = lower.indexOf(" - ");
+		if (dash > 0) {
+			variants.add(clean(BRACKETS.matcher(lower.substring(0, dash)).replaceAll(" ")));
+		}
+		variants.removeIf(String::isBlank);
+		return variants;
+	}
+
+	static int score(boolean exactTitle, String wantedArtist, String rawWantedTitle, CatalogTrack candidate) {
+		int score = exactTitle ? 10 : 0;
+		List<String> artists = candidate.artists();
+		if (!artists.isEmpty() && artistMatches(wantedArtist, List.of(artists.getFirst()))) {
+			score += 5;
+		}
+		// Não há penalidade por artistas extras: gravações originais de música instrumental creditam
+		// os músicos do conjunto (ex.: "On the Nature of Daylight" em The Blue Notebooks).
+		String album = normalize(candidate.album());
+		if (!album.isEmpty() && isRerecordingAlbum(album) && !isRerecordingAlbum(rawWantedTitle)) {
+			score -= 50;
+		}
+		return score;
+	}
+
+	static boolean isRerecordingAlbum(String normalizedAlbum) {
+		return RERECORDING_ALBUMS.stream().anyMatch(marker -> containsWords(normalizedAlbum, marker));
 	}
 
 	static boolean artistMatches(String wanted, List<String> artists) {

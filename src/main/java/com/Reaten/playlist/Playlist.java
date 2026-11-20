@@ -172,7 +172,11 @@ public class Playlist {
 	 * Só faixas encontradas entram em {@code tracks}; as demais sugestões ficam marcadas como não encontradas.
 	 */
 	void finishVerification(VerificationStatus verification, List<TrackVerifier.Outcome> outcomes) {
-		this.tracks.clear();
+		if (!tracks.isEmpty()) {
+			// As faixas antigas precisam ser removidas e gravadas antes (ver clearTracksForReverification):
+			// o Hibernate insere antes de apagar, e a mesma faixa voltando violaria (playlist, spotify_track_id).
+			throw new IllegalStateException("Limpe as faixas e grave a remoção antes de reverificar");
+		}
 		int position = 1;
 		for (TrackVerifier.Outcome outcome : outcomes) {
 			PlaylistRecommendation recommendation = recommendations.stream()
@@ -189,6 +193,11 @@ public class Playlist {
 		this.verificationStatus = verification;
 		this.status = Status.READY;
 		this.updatedAt = Instant.now();
+	}
+
+	/** Primeira etapa da reverificação: descarta as faixas atuais (o chamador faz o flush antes de inserir as novas). */
+	void clearTracksForReverification() {
+		this.tracks.clear();
 	}
 
 	/** Verificação impossível (catálogo não configurado ou fora do ar): as sugestões seguem não verificadas. */
