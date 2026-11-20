@@ -16,7 +16,7 @@ import com.Reaten.ai.RecommenderException;
 import com.Reaten.book.Book;
 
 /**
- * Executa a geração fora da requisição HTTP (thread virtual via @Async).
+ * Executa a geração fora da requisição HTTP (thread virtual via @Async): IA, validação e verificação no catálogo.
  * A chamada à IA acontece sem transação aberta; só leitura e gravação usam o banco.
  */
 @Component
@@ -29,14 +29,16 @@ class GenerationWorker {
 	private final RecommendationValidator validator;
 	private final GenerationProperties properties;
 	private final TransactionTemplate transactions;
+	private final PlaylistVerification verification;
 
 	GenerationWorker(PlaylistRepository playlists, MusicRecommender recommender, RecommendationValidator validator,
-			GenerationProperties properties, TransactionTemplate transactions) {
+			GenerationProperties properties, TransactionTemplate transactions, PlaylistVerification verification) {
 		this.playlists = playlists;
 		this.recommender = recommender;
 		this.validator = validator;
 		this.properties = properties;
 		this.transactions = transactions;
+		this.verification = verification;
 	}
 
 	@Async
@@ -47,9 +49,10 @@ class GenerationWorker {
 			RecommendationResult raw = recommender.recommend(request);
 			RecommendationResult valid = validator.validate(raw, properties.trackCount());
 			transactions.executeWithoutResult(status -> playlists.findById(playlistId)
-					.ifPresent(playlist -> playlist.complete(valid, recommender.modelName())));
-			log.info("Playlist {} gerada em {} ms com {} sugestões", playlistId,
+					.ifPresent(playlist -> playlist.applyRecommendations(valid, recommender.modelName())));
+			log.info("Playlist {}: IA respondeu em {} ms com {} sugestões", playlistId,
 					System.currentTimeMillis() - started, valid.recommendations().size());
+			verification.run(playlistId);
 		} catch (RecommenderException ex) {
 			log.warn("Geração da playlist {} falhou: {} ({})", playlistId, ex.getMessage(), ex.getReason());
 			markFailed(playlistId, ex.getReason().code);

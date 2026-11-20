@@ -104,9 +104,29 @@ public class Playlist {
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "verification_status", length = 20)
+	private VerificationStatus verificationStatus;
+
+	@Column(name = "spotify_saved_at")
+	private Instant spotifySavedAt;
+
 	@OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("position asc")
 	private List<PlaylistRecommendation> recommendations = new ArrayList<>();
+
+	@OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("position asc")
+	private List<PlaylistTrack> tracks = new ArrayList<>();
+
+	public enum VerificationStatus {
+		/** Sugestões buscadas no catálogo; só as encontradas viraram faixas. */
+		VERIFIED,
+		/** Catálogo musical não configurado neste ambiente. */
+		NOT_CONFIGURED,
+		/** O catálogo falhou durante a verificação; pode ser repetida. */
+		FAILED
+	}
 
 	protected Playlist() {
 	}
@@ -124,7 +144,8 @@ public class Playlist {
 		return playlist;
 	}
 
-	void complete(RecommendationResult result, String model) {
+	/** Grava a interpretação e as sugestões da IA. A playlist continua GENERATING até a verificação. */
+	void applyRecommendations(RecommendationResult result, String model) {
 		this.name = result.playlistName();
 		this.description = result.description();
 		this.musicalStyle = result.musicalStyle();
@@ -142,9 +163,79 @@ public class Playlist {
 		for (RecommendationResult.Recommendation item : result.recommendations()) {
 			this.recommendations.add(new PlaylistRecommendation(this, position++, item));
 		}
-		this.status = Status.READY;
 		this.failureCode = null;
 		this.updatedAt = Instant.now();
+	}
+
+	/**
+	 * Conclui a geração com o resultado da verificação no catálogo.
+	 * Só faixas encontradas entram em {@code tracks}; as demais sugestões ficam marcadas como não encontradas.
+	 */
+	void finishVerification(VerificationStatus verification, List<TrackVerifier.Outcome> outcomes) {
+		this.tracks.clear();
+		int position = 1;
+		for (TrackVerifier.Outcome outcome : outcomes) {
+			PlaylistRecommendation recommendation = recommendations.stream()
+					.filter(r -> r.getId().equals(outcome.recommendationId())).findFirst().orElse(null);
+			if (recommendation == null) {
+				continue;
+			}
+			recommendation.markMatch(outcome.status());
+			if (outcome.status() == PlaylistRecommendation.MatchStatus.MATCHED) {
+				tracks.add(new PlaylistTrack(this, position++, outcome.track(), recommendation.getId(),
+						recommendation.getReason(), PlaylistTrack.Source.AI));
+			}
+		}
+		this.verificationStatus = verification;
+		this.status = Status.READY;
+		this.updatedAt = Instant.now();
+	}
+
+	/** Verificação impossível (catálogo não configurado ou fora do ar): as sugestões seguem não verificadas. */
+	void finishWithoutVerification(VerificationStatus verification) {
+		this.verificationStatus = verification;
+		this.status = Status.READY;
+		this.updatedAt = Instant.now();
+	}
+
+	void rename(String newName, String newDescription) {
+		this.name = newName;
+		this.description = newDescription;
+		this.updatedAt = Instant.now();
+	}
+
+	boolean containsTrack(String spotifyTrackId) {
+		return tracks.stream().anyMatch(t -> t.getSpotifyTrackId().equals(spotifyTrackId));
+	}
+
+	void addTrack(com.Reaten.music.CatalogTrack track) {
+		tracks.add(new PlaylistTrack(this, tracks.size() + 1, track, null, null, PlaylistTrack.Source.MANUAL));
+		this.updatedAt = Instant.now();
+	}
+
+	boolean removeTrack(UUID trackId) {
+		boolean removed = tracks.removeIf(t -> t.getId().equals(trackId));
+		if (removed) {
+			int position = 1;
+			for (PlaylistTrack track : tracks) {
+				track.moveTo(position++);
+			}
+			this.updatedAt = Instant.now();
+		}
+		return removed;
+	}
+
+	void markPublished(String spotifyId, String spotifyUrl) {
+		this.spotifyPlaylistId = spotifyId;
+		this.spotifyPlaylistUrl = spotifyUrl;
+		Instant now = Instant.now();
+		this.spotifySavedAt = now;
+		this.updatedAt = now;
+	}
+
+	/** Houve edição depois do último envio ao Spotify. */
+	boolean hasUnpublishedChanges() {
+		return spotifySavedAt != null && updatedAt.isAfter(spotifySavedAt);
 	}
 
 	void fail(String code) {
@@ -231,5 +322,21 @@ public class Playlist {
 
 	public List<PlaylistRecommendation> getRecommendations() {
 		return recommendations;
+	}
+
+	public List<PlaylistTrack> getTracks() {
+		return tracks;
+	}
+
+	public VerificationStatus getVerificationStatus() {
+		return verificationStatus;
+	}
+
+	public String getSpotifyPlaylistId() {
+		return spotifyPlaylistId;
+	}
+
+	public Instant getSpotifySavedAt() {
+		return spotifySavedAt;
 	}
 }

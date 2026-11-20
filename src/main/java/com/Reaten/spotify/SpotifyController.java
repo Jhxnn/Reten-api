@@ -19,12 +19,13 @@ import com.Reaten.config.RetenProperties;
 import com.Reaten.spotify.SpotifyOAuthService.Outcome;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Conexão com o Spotify.
  * <pre>
  * GET    /api/spotify/connection   estado da conexão do usuário
- * GET    /api/spotify/authorize    redireciona para o consentimento da Spotify (navegação do browser)
+ * GET    /api/spotify/authorize    redireciona para o consentimento da Spotify (navegação do browser; ?voltar=/caminho)
  * GET    /api/spotify/callback     retorno da Spotify; redireciona para o frontend com o resultado
  * DELETE /api/spotify/connection   desconecta (apaga os tokens)
  * </pre>
@@ -32,6 +33,9 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/api/spotify")
 class SpotifyController {
+
+	static final String RETURN_PATH_ATTRIBUTE = "reten.spotify.returnPath";
+	static final String DEFAULT_RETURN = "/inicio";
 
 	private final SpotifyOAuthService oauth;
 	private final SpotifyAccountService accounts;
@@ -53,11 +57,17 @@ class SpotifyController {
 				.orElseGet(() -> new ConnectionResponse(oauth.isConfigured(), false, null, null));
 	}
 
+	/**
+	 * @param voltar caminho interno do frontend para onde voltar depois do consentimento (ex.: a playlist
+	 *               que a pessoa queria salvar). Só caminhos internos são aceitos.
+	 */
 	@GetMapping("/authorize")
-	ResponseEntity<Void> authorize(HttpServletRequest request) {
+	ResponseEntity<Void> authorize(@RequestParam(required = false) String voltar, HttpServletRequest request) {
+		String returnPath = safeReturnPath(voltar);
 		if (!oauth.isConfigured()) {
-			return redirectToFrontend(Outcome.NOT_CONFIGURED);
+			return redirectToFrontend(Outcome.NOT_CONFIGURED, returnPath);
 		}
+		request.getSession().setAttribute(RETURN_PATH_ATTRIBUTE, returnPath);
 		return ResponseEntity.status(HttpStatus.FOUND)
 				.location(URI.create(oauth.startAuthorization(request.getSession())))
 				.build();
@@ -69,10 +79,23 @@ class SpotifyController {
 			@RequestParam(required = false) String state,
 			@RequestParam(required = false) String error,
 			HttpServletRequest request) {
-		if (user == null) {
-			return redirectToFrontend(Outcome.SESSION_EXPIRED);
+		HttpSession session = request.getSession(false);
+		String returnPath = session == null ? DEFAULT_RETURN : safeReturnPath((String) session.getAttribute(RETURN_PATH_ATTRIBUTE));
+		if (session != null) {
+			session.removeAttribute(RETURN_PATH_ATTRIBUTE);
 		}
-		return redirectToFrontend(oauth.completeAuthorization(user.id(), code, state, error, request.getSession(false)));
+		if (user == null) {
+			return redirectToFrontend(Outcome.SESSION_EXPIRED, DEFAULT_RETURN);
+		}
+		return redirectToFrontend(oauth.completeAuthorization(user.id(), code, state, error, session), returnPath);
+	}
+
+	/** Evita redirecionamento aberto: só caminhos do próprio frontend, sem esquema nem host. */
+	static String safeReturnPath(String value) {
+		if (value == null || !value.matches("/[A-Za-z0-9/_-]{0,200}") || value.startsWith("//")) {
+			return DEFAULT_RETURN;
+		}
+		return value;
 	}
 
 	@DeleteMapping("/connection")
@@ -81,8 +104,8 @@ class SpotifyController {
 		accounts.disconnect(user.id());
 	}
 
-	private ResponseEntity<Void> redirectToFrontend(Outcome outcome) {
-		UriComponentsBuilder target = UriComponentsBuilder.fromUriString(properties.frontendUrl()).path("/inicio");
+	private ResponseEntity<Void> redirectToFrontend(Outcome outcome, String path) {
+		UriComponentsBuilder target = UriComponentsBuilder.fromUriString(properties.frontendUrl()).path(path);
 		if (outcome == Outcome.CONNECTED) {
 			target.queryParam("spotify", "conectado");
 		} else {

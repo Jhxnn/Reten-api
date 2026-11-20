@@ -32,6 +32,7 @@ import com.Reaten.ai.RecommendationResult;
 import com.Reaten.ai.RecommenderException;
 import com.Reaten.book.catalog.BookCatalogs;
 import com.Reaten.book.catalog.CatalogBook;
+import com.Reaten.music.MusicCatalog;
 
 import jakarta.servlet.http.Cookie;
 import tools.jackson.databind.JsonNode;
@@ -55,6 +56,10 @@ class PlaylistGenerationIntegrationTest {
 
 	@MockitoBean
 	BookCatalogs catalogs;
+
+	// Catálogo musical "não configurado": aqui só interessa a geração com IA.
+	@MockitoBean
+	MusicCatalog musicCatalog;
 
 	@BeforeEach
 	void configureMocks() {
@@ -92,7 +97,9 @@ class PlaylistGenerationIntegrationTest {
 		assertThat(ready.path("userNotes").asString()).isEqualTo("Me lembrou a infância");
 		assertThat(ready.path("atmosphere").path("moods")).hasSize(2);
 		assertThat(ready.path("suggestions")).hasSize(24);
-		assertThat(ready.path("suggestions").path(0).path("verified").asBoolean()).isFalse();
+		assertThat(ready.path("suggestions").path(0).path("matchStatus").asString()).isEqualTo("PENDING");
+		assertThat(ready.path("verificationStatus").asString()).isEqualTo("NOT_CONFIGURED");
+		assertThat(ready.path("tracks")).isEmpty();
 		assertThat(ready.path("book").path("title").asString()).isEqualTo("O nome do vento");
 	}
 

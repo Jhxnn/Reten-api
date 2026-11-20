@@ -71,6 +71,12 @@ Testes do backend usam Testcontainers (Docker precisa estar rodando): `./mvnw te
 | POST   | `/api/playlists`            | sessão   | Inicia a geração com IA (202, status `GENERATING`) |
 | GET    | `/api/playlists/{id}`       | sessão   | Estado e resultado da geração (`GENERATING`, `READY`, `FAILED`) |
 | GET    | `/api/playlists/usage`      | sessão   | Gerações usadas nas últimas 24 h e se a IA está configurada |
+| PATCH  | `/api/playlists/{id}`       | sessão   | Edita nome e descrição |
+| DELETE | `/api/playlists/{id}/tracks/{trackId}` | sessão | Remove uma faixa |
+| GET    | `/api/playlists/{id}/replacements?q=` | sessão | Busca faixas no Spotify para substituir ou acrescentar |
+| POST   | `/api/playlists/{id}/tracks` | sessão  | Acrescenta uma faixa (dados relidos do Spotify) |
+| POST   | `/api/playlists/{id}/verify` | sessão  | Refaz a verificação das sugestões no Spotify |
+| POST   | `/api/playlists/{id}/spotify` | sessão | Cria ou atualiza a playlist (privada) na conta Spotify |
 
 Requisições que alteram dados exigem o cabeçalho `X-XSRF-TOKEN` com o valor do cookie `XSRF-TOKEN`.
 Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estável.
@@ -90,8 +96,19 @@ Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estáve
 | PostgreSQL      | Configurado (Flyway) |
 | E-mail (SMTP)   | Funcionando com Mailpit em desenvolvimento; produção requer um provedor SMTP |
 | Livros          | **Open Library** funcionando sem chave (edições em português via `lang=por`; sinopses geralmente em inglês). **Google Books** é usado automaticamente quando `GOOGLE_BOOKS_API_KEY` estiver definido — a cota anônima dele está zerada |
-| Spotify Web API | OAuth implementado e testado com cliente simulado. **Precisa de `SPOTIFY_CLIENT_ID`/`SECRET` para funcionar de verdade.** Busca e playlists na Fase 5 |
-| OpenAI API      | Implementada (Responses API, Structured Outputs estrito, validação e novas tentativas) e testada com servidor simulado. **Precisa de `OPENAI_API_KEY` para gerar de verdade**; sem ela, a geração responde `ai_not_configured`. As sugestões ainda não são verificadas no Spotify (Fase 5) |
+| Spotify Web API | OAuth, busca/verificação de faixas (token do app) e criação/atualização de playlists implementados e testados contra servidor simulado, já nos endpoints de fev/2026. **Precisa de `SPOTIFY_CLIENT_ID`/`SECRET` para funcionar de verdade**; sem eles, as sugestões ficam como "não verificadas" e salvar fica indisponível |
+| OpenAI API      | Implementada (Responses API, Structured Outputs estrito, validação e novas tentativas) e testada com servidor simulado. **Precisa de `OPENAI_API_KEY` para gerar de verdade**; sem ela, a geração responde `ai_not_configured` |
+
+### Verificação no Spotify
+
+- Depois da IA, cada sugestão é buscada no Spotify (`track:"…" artist:"…"`, e uma busca livre se não achar).
+  Só entram na playlist faixas cujo título **e** artista batem; sufixos como "Remastered" são ignorados, versões
+  ao vivo/remix só valem se a sugestão pedir. Sugestões sem correspondência aparecem como "não encontradas".
+- Usa o token do próprio app (Client Credentials), então funciona mesmo para quem não conectou o Spotify.
+  A documentação da Spotify não detalha esse fluxo em Development Mode; se a busca for recusada, a playlist fica
+  pronta com as sugestões não verificadas e pode ser verificada de novo.
+- Limites de Development Mode respeitados: no máximo 10 resultados por busca, poucas buscas em paralelo,
+  `Retry-After` em 429. Playlists são criadas com `POST /me/playlists` e preenchidas com `/playlists/{id}/items`.
 
 ### Geração com IA
 

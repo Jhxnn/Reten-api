@@ -6,13 +6,15 @@ import com.Reaten.ai.RecommendationResult.Recommendation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-/** Sugestão da IA. Não é uma faixa verificada — a confirmação no Spotify acontece na etapa seguinte. */
+/** Sugestão da IA. Não é uma faixa: só vira {@link PlaylistTrack} se for encontrada no catálogo real. */
 @Entity
 @Table(name = "playlist_recommendations")
 public class PlaylistRecommendation {
@@ -39,7 +41,24 @@ public class PlaylistRecommendation {
 	@Column(name = "search_query", nullable = false, length = 300)
 	private String searchQuery;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "match_status", nullable = false, length = 20)
+	private MatchStatus matchStatus = MatchStatus.PENDING;
+
+	/** Resultado da busca desta sugestão no catálogo real. */
+	public enum MatchStatus {
+		PENDING, MATCHED, NOT_FOUND, DUPLICATE
+	}
+
 	protected PlaylistRecommendation() {
+	}
+
+	void markMatch(MatchStatus status) {
+		this.matchStatus = status;
+	}
+
+	public MatchStatus getMatchStatus() {
+		return matchStatus;
 	}
 
 	PlaylistRecommendation(Playlist playlist, int position, Recommendation source) {

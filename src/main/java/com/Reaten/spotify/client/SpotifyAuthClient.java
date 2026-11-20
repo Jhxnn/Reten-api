@@ -14,6 +14,9 @@ public interface SpotifyAuthClient {
 
 	TokenGrant refresh(String refreshToken);
 
+	/** Token do próprio app (sem usuário), usado para buscar no catálogo. */
+	TokenGrant clientCredentials();
+
 	SpotifyProfile currentProfile(String accessToken);
 
 	/**
