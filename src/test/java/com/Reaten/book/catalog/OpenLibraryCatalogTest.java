@@ -111,6 +111,16 @@ class OpenLibraryCatalogTest {
 	}
 
 	@Test
+	void transientOutageIsRetriedOnceThenReported() {
+		responses.put("/search.json", "{}");
+		status = 503;
+		assertThatThrownBy(() -> catalog.search(BookQuery.of("duna", BookQuery.Field.ALL)))
+				.isInstanceOf(CatalogUnavailableException.class)
+				.matches(ex -> !((CatalogUnavailableException) ex).isRateLimited());
+		assertThat(requested).hasSize(2);
+	}
+
+	@Test
 	void rateLimitIsReportedAsSuch() {
 		responses.put("/search.json", "{}");
 		status = 429;
