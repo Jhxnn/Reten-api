@@ -1,0 +1,32 @@
+# Infraestrutura local do Reten. Portas escolhidas para não colidir com outros projetos;
+# todas podem ser alteradas via .env.
+name: reten
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: reten-db
+    environment:
+      POSTGRES_DB: ${RETEN_DB_NAME:-reten}
+      POSTGRES_USER: ${RETEN_DB_USER:-reten}
+      POSTGRES_PASSWORD: ${RETEN_DB_PASSWORD:?Defina RETEN_DB_PASSWORD no .env}
+    ports:
+      - "${RETEN_DB_PORT:-5434}:5432"
+    volumes:
+      - reten-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Captura todos os e-mails enviados em desenvolvimento. Interface: http://localhost:8026
+  mailpit:
+    image: axllent/mailpit:v1.21
+    container_name: reten-mailpit
+    ports:
+      - "${RETEN_MAIL_PORT:-1026}:1025"
+      - "${RETEN_MAILPIT_UI_PORT:-8026}:8025"
+
+volumes:
+  reten-db-data:
