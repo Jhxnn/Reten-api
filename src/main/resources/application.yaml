@@ -28,6 +28,11 @@ spring:
     problemdetails:
       enabled: true
 
+  # Threads virtuais: a geração assíncrona (@Async) passa a maior parte do tempo esperando a IA.
+  threads:
+    virtual:
+      enabled: true
+
   # Sessões guardadas no Postgres; as tabelas são criadas pelo Flyway (V3).
   session:
     timeout: 14d
@@ -62,6 +67,14 @@ reten:
     ttl: 30m
   mail:
     from: ${RETEN_MAIL_FROM:Reten <nao-responda@reten.local>}
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    model: ${OPENAI_MODEL:gpt-5-mini}
+    # Vazio para modelos sem raciocínio (ex.: gpt-4.1); low/medium/high para modelos de raciocínio.
+    reasoning-effort: ${OPENAI_REASONING_EFFORT:low}
+  generation:
+    daily-limit: ${RETEN_GENERATION_DAILY_LIMIT:10}
+    track-count: 24
   books:
     # Sem chave, a busca usa o Open Library. Com chave, usa o Google Books (sinopses melhores em português).
     google-api-key: ${GOOGLE_BOOKS_API_KEY:}
