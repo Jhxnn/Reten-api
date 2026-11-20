@@ -62,6 +62,9 @@ reten:
     ttl: 30m
   mail:
     from: ${RETEN_MAIL_FROM:Reten <nao-responda@reten.local>}
+  books:
+    # Sem chave, a busca usa o Open Library. Com chave, usa o Google Books (sinopses melhores em português).
+    google-api-key: ${GOOGLE_BOOKS_API_KEY:}
   spotify:
     client-id: ${SPOTIFY_CLIENT_ID:}
     client-secret: ${SPOTIFY_CLIENT_SECRET:}
