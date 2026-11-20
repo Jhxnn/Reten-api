@@ -1,0 +1,8 @@
+# Perfil de testes: chave de criptografia fixa e Spotify apontando para endereços fictícios.
+reten:
+  frontend-url: http://127.0.0.1:5173
+  security:
+    token-encryption-key: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+  spotify:
+    client-id: test-client
+    client-secret: test-secret

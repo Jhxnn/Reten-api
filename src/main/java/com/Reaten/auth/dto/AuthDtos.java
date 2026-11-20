@@ -1,0 +1,51 @@
+package com.Reaten.auth.dto;
+
+import java.util.UUID;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+/** Contratos HTTP do módulo de autenticação. */
+public final class AuthDtos {
+
+	private AuthDtos() {
+	}
+
+	public record RegisterRequest(
+			@NotBlank(message = "Informe seu nome.")
+			@Size(max = 80, message = "Use no máximo 80 caracteres.")
+			String name,
+
+			@NotBlank(message = "Informe seu e-mail.")
+			@Email(message = "Este e-mail não parece válido.")
+			@Size(max = 254)
+			String email,
+
+			@NotBlank(message = "Crie uma senha.")
+			@Size(min = 8, max = 72, message = "A senha precisa ter entre 8 e 72 caracteres.")
+			String password) {
+	}
+
+	public record LoginRequest(
+			@NotBlank(message = "Informe seu e-mail.") String email,
+			@NotBlank(message = "Informe sua senha.") String password) {
+	}
+
+	public record ForgotPasswordRequest(
+			@NotBlank(message = "Informe seu e-mail.")
+			@Email(message = "Este e-mail não parece válido.")
+			String email) {
+	}
+
+	public record ResetPasswordRequest(
+			@NotBlank String token,
+
+			@NotBlank(message = "Crie uma nova senha.")
+			@Size(min = 8, max = 72, message = "A senha precisa ter entre 8 e 72 caracteres.")
+			String password) {
+	}
+
+	public record CurrentUserResponse(UUID id, String name, String email) {
+	}
+}
