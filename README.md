@@ -129,6 +129,25 @@ Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estáve
 3. Em *User Management*, adicione o e-mail Spotify de cada pessoa que vai testar (máximo 5 em Development Mode).
 4. Preencha `SPOTIFY_CLIENT_ID` e `SPOTIFY_CLIENT_SECRET` no `.env` e reinicie a API.
 
+#### Usando um túnel HTTPS (ngrok)
+
+Para testar por um endereço público em vez de `127.0.0.1`:
+
+```bash
+ngrok http 127.0.0.1:5173
+```
+
+Com a URL gerada (`https://<subdominio>.ngrok-free.app`):
+
+1. No `.env`: `RETEN_FRONTEND_URL=https://<subdominio>.ngrok-free.app` e
+   `SPOTIFY_REDIRECT_URI=https://<subdominio>.ngrok-free.app/api/spotify/callback`; reinicie a API.
+2. Cadastre a mesma Redirect URI no Spotify Developer Dashboard.
+3. Use o Reten **sempre pela URL do ngrok** (o cookie de sessão é do host em que você entrou).
+
+No plano gratuito a URL muda a cada `ngrok http`; reserve o domínio estático gratuito em
+https://dashboard.ngrok.com/domains e rode `ngrok http --url=<seu-dominio> 127.0.0.1:5173` para não precisar
+atualizar o Spotify toda vez. O Vite já aceita hosts `*.ngrok-free.app`, `*.ngrok-free.dev`, `*.ngrok.app` e `*.ngrok.dev`.
+
 > Em Development Mode, a Spotify permite no máximo 5 usuários cadastrados manualmente.
 > Por isso, conectar o Spotify é opcional no Reten: só é exigido para salvar a playlist na conta.
 
