@@ -71,6 +71,8 @@ Testes do backend usam Testcontainers (Docker precisa estar rodando): `./mvnw te
 | POST   | `/api/playlists`            | sessão   | Inicia a geração com IA (202, status `GENERATING`) |
 | GET    | `/api/playlists/{id}`       | sessão   | Estado e resultado da geração (`GENERATING`, `READY`, `FAILED`) |
 | GET    | `/api/playlists/usage`      | sessão   | Gerações usadas nas últimas 24 h e se a IA está configurada |
+| GET    | `/api/playlists?bookId=&limit=` | sessão | Playlists do usuário em resumo, mais recentes primeiro |
+| GET    | `/api/library`              | sessão   | Biblioteca: livros escolhidos, cada um com suas trilhas |
 | PATCH  | `/api/playlists/{id}`       | sessão   | Edita nome e descrição |
 | DELETE | `/api/playlists/{id}/tracks/{trackId}` | sessão | Remove uma faixa |
 | GET    | `/api/playlists/{id}/replacements?q=` | sessão | Busca faixas no Spotify para substituir ou acrescentar |

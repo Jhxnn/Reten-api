@@ -110,6 +110,30 @@ public final class PlaylistDtos {
 			Instant createdAt) {
 	}
 
+	/** Playlist em listas (início, biblioteca, página do livro): sem faixas nem sugestões. */
+	public record PlaylistSummary(
+			UUID id,
+			String name,
+			ListeningMode mode,
+			String status,
+			String verificationStatus,
+			long trackCount,
+			BookSummary book,
+			String spotifyUrl,
+			Instant createdAt) {
+	}
+
+	/** Um livro na estante do usuário, com as trilhas criadas a partir dele (mais recentes primeiro). */
+	public record LibraryBook(
+			BookSummary book,
+			String publishedDate,
+			Instant lastSelectedAt,
+			List<PlaylistSummary> playlists) {
+	}
+
+	public record LibraryResponse(int bookCount, int playlistCount, List<LibraryBook> books) {
+	}
+
 	/** @param resetsAt quando a próxima geração volta a ficar disponível (nulo se ainda há gerações livres) */
 	public record UsageResponse(int limit, int used, int remaining, Instant resetsAt, boolean aiConfigured) {
 	}

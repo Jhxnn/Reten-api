@@ -71,7 +71,13 @@ public class BookService {
 
 	@Transactional(readOnly = true)
 	public List<BookResponse> recent(UUID userId) {
-		return userBooks.findRecent(userId, Limit.of(RECENT_LIMIT)).stream()
+		return recent(userId, RECENT_LIMIT);
+	}
+
+	/** Livros escolhidos pelo usuário, do mais recente ao mais antigo. */
+	@Transactional(readOnly = true)
+	public List<BookResponse> recent(UUID userId, int limit) {
+		return userBooks.findRecent(userId, Limit.of(limit)).stream()
 				.map(ub -> BookResponse.of(ub.getBook(), ub.getLastSelectedAt()))
 				.toList();
 	}
