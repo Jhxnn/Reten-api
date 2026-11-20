@@ -10,12 +10,12 @@ atmosfera de cada obra, com interpretação por inteligência artificial.
 ├── src/main/java/com/Reaten/
 │   ├── auth/         cadastro, login, recuperação de senha
 │   ├── user/         usuários
-│   ├── book/         busca de livros (Google Books) e cache local
+│   ├── book/         busca de livros (Open Library / Google Books) e livros escolhidos
 │   ├── playlist/     núcleo: geração, prévia, edição, histórico
 │   ├── music/        domínio musical independente de provedor
 │   ├── spotify/      OAuth, busca e criação de playlists na Spotify Web API
 │   ├── ai/           interpretação literária e recomendações (OpenAI)
-│   ├── shared/       erros (RFC 9457) e código transversal
+│   ├── shared/       erros (RFC 9457), criptografia e código transversal
 │   └── config/       configurações do Spring
 ├── src/main/resources/db/migration/   migrações Flyway
 └── docker-compose.yml                 Postgres + Mailpit para desenvolvimento
@@ -26,4 +26,82 @@ Para desenvolver localmente, clone-o em `./frontend` (pasta ignorada por este re
 
 Branches: `desenv` recebe o trabalho do dia a dia; `main` recebe apenas versões estáveis.
 
-## Rodando localmente倊썲ⶩ敲畱獩瑩獯›䑊⁋ㄲⰫ丠摯⁥〲Ⱛ䐠捯敫⹲ਊ恠扠獡੨灣⸠湥⹶硥浡汰⁥攮癮†††††‣牰敥据慨删呅久䑟彂䅐卓佗䑒攠删呅久呟䭏久䕟䍎奒呐佉彎䕋⁙漨数獮汳爠湡⁤戭獡㙥‴㈳਩潤正牥挠浯潰敳甠⁰搭†††††‣潐瑳牧獥⠠㐵㐳 ⁥慍汩楰⁴匨呍⁐〱㘲‬湩整晲捡⁥瑨灴⼺氯捯污潨瑳㠺㈰⤶⸊洯湶⁷灳楲杮戭潯㩴畲⁮†††⌠䄠䥐攠⁭瑨灴⼺氯捯污潨瑳㠺㤰ਰ恠੠怊恠慢桳朊瑩挠潬敮栠瑴獰⼺术瑩畨⹢潣⽭桊湸⽮敒整⵮牦湯⹴楧⁴牦湯整摮挊⁤牦湯整摮渊浰椠獮慴汬渊浰爠湵搠癥†††††††††⌠栠瑴㩰⼯㈱⸷⸰⸰㨱ㄵ㌷钀⼠灡⁩꧃攠据浡湩慨潤瀠牡⁡⁡偁੉恠੠䄊散獳⁥敳灭敲瀠牯⨠株瑴㩰⼯㈱⸷⸰⸰㨱ㄵ㌷⨪⠠썮澣怠潬慣桬獯恴㨩愠匠潰楴祦猠돃愠散瑩⁡敲楤敲瑣瀠牯䤠⁐敤氊潯扰捡Ⱬ攠漠挠潯楫⁥敤猠獥썳澣瀠敲楣慳攠瑳牡渠⁯敭浳⁯潨瑳搠⁯敲潴湲⁯潤传畁桴ਮ吊獥整⁳潤戠捡敫摮甠慳⁭敔瑳潣瑮楡敮獲⠠潄正牥瀠敲楣慳攠瑳牡爠摯湡潤㨩怠⼮癭睮琠獥恴ਮ⌊‣偁੉簊䴠꧃潴潤簠䌠浡湩潨††††††††††††簠䄠散獳⁯†⁼敄捳楲ꟃꏃ⁯੼⁼ⴭⴭⴭ簠ⴠⴭⴭⴭⴭⴭⴭⴭⴭⴭⴭⴭⴭⴭⴭⴭ簠ⴠⴭⴭⴭ‭⁼ⴭⴭⴭⴭ‭੼⁼䕇⁔†簠怠愯楰愯瑵⽨獣晲⁠†††††††簠瀠뫃汢捩⁯簠䜠牡湡整漠挠潯楫⁥塠剓ⵆ佔䕋恎簠簊倠协⁔†⁼⽠灡⽩畡桴爯来獩整恲††††††⁼썰抺楬潣†⁼牃慩愠挠湯慴攠椠楮楣⁡⁡敳獳ꏃ⁯੼⁼佐呓†簠怠愯楰愯瑵⽨潬楧恮†††††††簠瀠뫃汢捩⁯簠䤠楮楣⁡⁡敳獳ꏃ⁯੼⁼佐呓†簠怠愯楰愯瑵⽨潬潧瑵⁠††††††簠猠獥썳澣†簠䔠据牥慲愠猠獥썳澣簠簊䜠呅††⁼⽠灡⽩畡桴洯恥†††††††††⁼敳獳ꏃ⁯†⁼獕썵犡潩愠畴污簠簊倠协⁔†⁼⽠灡⽩畡桴瀯獡睳牯⽤潦杲瑯⁠††⁼썰抺楬潣†⁼湅楶⁡楬歮搠⁥敲敤楦楮ꟃꏃ⁯猨浥牰⁥〲⤲簠簊倠协⁔†⁼⽠灡⽩畡桴瀯獡睳牯⽤敲敳恴†††⁼썰抺楬潣†⁼敒敤楦敮愠猠湥慨攠攠据牥慲琠摯獡愠⁳敳獳뗃獥簠簊䜠呅††⁼⽠灡⽩灳瑯晩⽹潣湮捥楴湯⁠†††⁼敳獳ꏃ⁯†⁼獅慴潤搠⁡潣敮썸澣匠潰楴祦簠簊䜠呅††⁼⽠灡⽩灳瑯晩⽹畡桴牯穩恥††††⁼敳獳ꏃ⁯†⁼敒楤敲楣湯⁡慰慲漠挠湯敳瑮浩湥潴搠⁡灓瑯晩⁹੼⁼䕇⁔†簠怠愯楰猯潰楴祦振污扬捡恫††††簠瀠뫃汢捩⩯簠删瑥牯潮搠⁯䅏瑵㭨爠摥物捥潩慮瀠牡⁡⁯牦湯整摮簠簊䐠䱅呅⁅⁼⽠灡⽩灳瑯晩⽹潣湮捥楴湯⁠†††⁼敳獳ꏃ⁯†⁼敄捳湯捥慴攠愠慰慧漠⁳潴敫獮簠簊䜠呅††⁼⽠灡⽩潢歯⽳敳牡档焿☽祢怽††簠猠獥썳澣†簠䈠獵慣渠⁯慣썴没杯⁯怨祢㩠愠汬‬楴汴ⱥ愠瑵潨Ⱳ椠扳⥮簠簊䜠呅††⁼⽠灡⽩潢歯⽳慣慴潬㽧摩怽††††⁼敳獳ꏃ⁯†⁼敄慴桬獥搠⁥浵氠癩潲搠⁯慣썴没杯Ɐ挠浯猠湩灯敳簠簊倠协⁔†⁼⽠灡⽩潢歯⽳敳敬瑣⁠††††††⁼敳獳ꏃ⁯†⁼獅潣桬⁥⁯楬牶㩯朠慵摲⁡潮删瑥湥攠渠⁯楨瑳돃楲潣簠簊䜠呅††⁼⽠灡⽩潢歯⽳敲散瑮⁠††††††⁼敳獳ꏃ⁯†⁼楌牶獯攠捳汯楨潤⁳敲散瑮浥湥整瀠汥⁯獵썵犡潩簠簊䜠呅††⁼⽠灡⽩潢歯⽳楻絤⁠†††††††⁼敳獳ꏃ⁯†⁼楌牶⁯畧牡慤潤渠⁯敒整⁮੼刊煥極楳ꟃ뗃獥焠敵愠瑬牥浡搠摡獯攠楸敧⁭⁯慣敢ꟃ污潨怠ⵘ単䙒吭䭏久⁠潣⁭⁯慶潬⁲潤挠潯楫⁥塠剓ⵆ佔䕋恎ਮ牅潲⁳敳畧浥愠删䍆㤠㔴‷怨灡汰捩瑡潩⽮牰扯敬⭭獪湯⥠挠浯甠⁭慣灭⁯捠摯恥攠瑳ꇃ敶⹬尊‪⁯慣汬慢正瘠污摩⁡⁡敳獳ꏃ⁯⁥⁯獠慴整⁠湩整湲浡湥整ਮ⌊‣敓畧慲썮憧ਊ‭敓獳ꏃ⁯潮猠牥楶潤⁲匨牰湩⁧敓獳潩⁮䑊䍂Ⱙ挠潯楫⁥剠呅久卟卅䥓乏⁠瑈灴湏祬⬠匠浡卥瑩㵥慌⁸匨捥牵⁥浥瀠潲畤ꟃꏃ⥯ਮ‭摉搠⁥敳獳ꏃ⁯牴捯摡⁯潮氠杯湩※潴敫⁮千䙒爠瑯捡潩慮潤渠⁯潬楧⹮ⴊ匠湥慨⁳潣⁭䍂祲瑰‮潔敫獮搠⁥敲敤楦楮ꟃꏃ㩯愠敬瑡돃楲獯⠠㔲‶楢獴Ⱙ朠慵摲摡獯挠浯⁯䡓ⵁ㔲ⰶ㌠‰業Ɱ甠潳쌠溺捩⹯ⴊ吠歯湥⁳潤匠潰楴祦挠晩慲潤⁳潣⁭䕁ⵓ㔲ⴶ䍇⁍怨䕒䕔彎佔䕋彎久剃偙䥔乏䭟奅⥠‬敲潮慶潤⁳畡潴慭楴慣敭瑮⹥ਊ⌣䔠瑳摡⁯慤⁳湩整牧썡쎧斵ੳ簊䤠瑮来慲ꟃꏃ⁯†††簠匠瑩慵ꟃꏃ⁯੼⁼ⴭⴭⴭⴭⴭⴭⴭⴭ‭⁼ⴭⴭⴭⴭ簠簊倠獯杴敲兓⁌†††簠䌠湯楦畧慲潤⠠汆睹祡 ੼⁼ⵅ慭汩⠠䵓偔 ††⁼畆据潩慮摮⁯潣⁭慍汩楰⁴浥搠獥湥潶癬浩湥潴※牰摯썵쎧澣爠煥敵⁲浵瀠潲敶潤⁲䵓偔簠簊匠潰楴祦圠扥䄠䥐†簠传畁桴椠灭敬敭瑮摡⁯⁥整瑳摡⁯潣⁭汣敩瑮⁥楳畭慬潤‮⨪牐捥獩⁡敤怠偓呏䙉彙䱃䕉呎䥟恄怯䕓剃呅⁠慰慲映湵楣湯牡搠⁥敶摲摡⹥⨪䈠獵慣攠瀠慬汹獩獴渠⁡慆敳㔠簠簊传数䅮⁉偁⁉†††簠丠ꏃ⁯潣普杩牵摡⁡胢ₔ慆敳㐠簠簊䰠癩潲⁳†††††簠⨠伪数⁮楌牢牡⩹‪畦据潩慮摮⁯敳⁭档癡⁥攨楤ꟃ뗃獥攠⁭潰瑲杵썵玪瘠慩怠慬杮瀽牯㭠猠湩灯敳⁳敧慲浬湥整攠⁭湩汧꫃⥳‮⨪潇杯敬䈠潯獫⨪쌠₩獵摡⁯畡潴慭楴慣敭瑮⁥畱湡潤怠佇䝏䕌䉟住卋䅟䥐䭟奅⁠獥楴敶⁲敤楦楮潤钀愠挠瑯⁡湡듃楮慭搠汥⁥獥썴₡敺慲慤簠ਊ⌣‣潃普杩牵湡潤漠匠潰楴祦ਊ⸱䌠楲⁥浵愠灰攠⁭瑨灴㩳⼯敤敶潬数⹲灳瑯晩⹹潣⽭慤桳潢牡⁤愨挠湯慴搠湯⁡牰捥獩⁡敳⁲牐浥畩⥭ਮ⸲䔠⁭刪摥物捥⁴剕獉Ⱚ挠摡獡牴⁥硥瑡浡湥整怠瑨灴⼺ㄯ㜲〮〮ㄮ㔺㜱⼳灡⽩灳瑯晩⽹慣汬慢正⹠㌊‮浅⨠獕牥䴠湡条浥湥⩴‬摡捩潩敮漠攠洭楡⁬灓瑯晩⁹敤挠摡⁡数獳慯焠敵瘠楡琠獥慴⁲洨ꇃ楸潭㔠攠⁭敄敶潬浰湥⁴潍敤⸩㐊‮牐敥据慨怠偓呏䙉彙䱃䕉呎䥟恄攠怠偓呏䙉彙䱃䕉呎卟䍅䕒恔渠⁯⹠湥恶攠爠楥楮楣⁥⁡偁⹉ਊ‾浅䐠癥汥灯敭瑮䴠摯ⱥ愠匠潰楴祦瀠牥業整渠⁯썭碡浩⁯‵獵썵犡潩⁳慣慤瑳慲潤⁳慭畮污敭瑮⹥㸊倠牯椠獳Ɐ挠湯捥慴⁲⁯灓瑯晩⁹꧃漠捰潩慮⁬潮删瑥湥›썳₳꧃攠楸楧潤瀠牡⁡慳癬牡愠瀠慬汹獩⁴慮挠湯慴ਮ
+## Rodando localmente
+
+Pré-requisitos: JDK 21+, Node 20+, Docker.
+
+```bash
+cp .env.example .env          # preencha RETEN_DB_PASSWORD e RETEN_TOKEN_ENCRYPTION_KEY (openssl rand -base64 32)
+docker compose up -d          # Postgres (5434) e Mailpit (SMTP 1026, interface http://localhost:8026)
+./mvnw spring-boot:run        # API em http://localhost:8090
+```
+
+```bash
+git clone https://github.com/Jhxnn/Reten-front.git frontend
+cd frontend
+npm install
+npm run dev                   # http://127.0.0.1:5173 — /api é encaminhado para a API
+```
+
+Acesse sempre por **http://127.0.0.1:5173** (não `localhost`): a Spotify só aceita redirect por IP de
+loopback, e o cookie de sessão precisa estar no mesmo host do retorno do OAuth.
+
+Testes do backend usam Testcontainers (Docker precisa estar rodando): `./mvnw test`.
+
+## API
+
+| Método | Caminho                     | Acesso   | Descrição |
+| ------ | --------------------------- | -------- | --------- |
+| GET    | `/api/auth/csrf`            | público  | Garante o cookie `XSRF-TOKEN` |
+| POST   | `/api/auth/register`        | público  | Cria a conta e inicia a sessão |
+| POST   | `/api/auth/login`           | público  | Inicia a sessão |
+| POST   | `/api/auth/logout`          | sessão   | Encerra a sessão |
+| GET    | `/api/auth/me`              | sessão   | Usuário atual |
+| POST   | `/api/auth/password/forgot` | público  | Envia link de redefinição (sempre 202) |
+| POST   | `/api/auth/password/reset`  | público  | Redefine a senha e encerra todas as sessões |
+| GET    | `/api/spotify/connection`   | sessão   | Estado da conexão Spotify |
+| GET    | `/api/spotify/authorize`    | sessão   | Redireciona para o consentimento da Spotify |
+| GET    | `/api/spotify/callback`     | público* | Retorno do OAuth; redireciona para o frontend |
+| DELETE | `/api/spotify/connection`   | sessão   | Desconecta e apaga os tokens |
+| GET    | `/api/books/search?q=&by=`  | sessão   | Busca no catálogo (`by`: all, title, author, isbn) |
+| GET    | `/api/books/catalog?id=`    | sessão   | Detalhes de um livro do catálogo, com sinopse |
+| POST   | `/api/books/select`         | sessão   | Escolhe o livro: guarda no Reten e no histórico |
+| GET    | `/api/books/recent`         | sessão   | Livros escolhidos recentemente pelo usuário |
+| GET    | `/api/books/{id}`           | sessão   | Livro guardado no Reten |
+
+Requisições que alteram dados exigem o cabeçalho `X-XSRF-TOKEN` com o valor do cookie `XSRF-TOKEN`.
+Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estável.
+\* o callback valida a sessão e o `state` internamente.
+
+## Segurança
+
+- Sessão no servidor (Spring Session JDBC), cookie `RETEN_SESSION` HttpOnly + SameSite=Lax (Secure em produção).
+- Id de sessão trocado no login; token CSRF rotacionado no login.
+- Senhas com BCrypt. Tokens de redefinição: aleatórios (256 bits), guardados como SHA-256, 30 min, uso único.
+- Tokens do Spotify cifrados com AES-256-GCM (`RETEN_TOKEN_ENCRYPTION_KEY`), renovados automaticamente.
+
+## Estado das integrações
+
+| Integração      | Situação |
+| --------------- | -------- |
+| PostgreSQL      | Configurado (Flyway) |
+| E-mail (SMTP)   | Funcionando com Mailpit em desenvolvimento; produção requer um provedor SMTP |
+| Livros          | **Open Library** funcionando sem chave (edições em português via `lang=por`; sinopses geralmente em inglês). **Google Books** é usado automaticamente quando `GOOGLE_BOOKS_API_KEY` estiver definido — a cota anônima dele está zerada |
+| Spotify Web API | OAuth implementado e testado com cliente simulado. **Precisa de `SPOTIFY_CLIENT_ID`/`SECRET` para funcionar de verdade.** Busca e playlists na Fase 5 |
+| OpenAI API      | Não configurada — Fase 4 |
+
+### Configurando o Spotify
+
+1. Crie um app em https://developer.spotify.com/dashboard (a conta dona precisa ser Premium).
+2. Em *Redirect URIs*, cadastre exatamente `http://127.0.0.1:5173/api/spotify/callback`.
+3. Em *User Management*, adicione o e-mail Spotify de cada pessoa que vai testar (máximo 5 em Development Mode).
+4. Preencha `SPOTIFY_CLIENT_ID` e `SPOTIFY_CLIENT_SECRET` no `.env` e reinicie a API.
+
+> Em Development Mode, a Spotify permite no máximo 5 usuários cadastrados manualmente.
+> Por isso, conectar o Spotify é opcional no Reten: só é exigido para salvar a playlist na conta.
+
+### Configurando o Google Books (opcional)
+
+1. Em https://console.cloud.google.com/apis/credentials, crie uma chave de API e ative a *Books API*.
+2. Preencha `GOOGLE_BOOKS_API_KEY` no `.env` e reinicie a API. A busca passa a usar o Google Books;
+   livros já escolhidos do Open Library continuam funcionando.
