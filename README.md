@@ -70,10 +70,11 @@ Testes do backend usam Testcontainers (Docker precisa estar rodando): `./mvnw te
 | GET    | `/api/books/{id}`           | sessão   | Livro guardado no Reten |
 | POST   | `/api/playlists`            | sessão   | Inicia a geração com IA (202, status `GENERATING`) |
 | GET    | `/api/playlists/{id}`       | sessão   | Estado e resultado da geração (`GENERATING`, `READY`, `FAILED`) |
-| GET    | `/api/playlists/usage`      | sessão   | Gerações usadas nas últimas 24 h e se a IA está configurada |
+| GET    | `/api/playlists/usage`      | sessão   | Gerações nas últimas 24 h, vagas ocupadas na biblioteca e se a IA está configurada |
 | GET    | `/api/playlists?bookId=&limit=` | sessão | Playlists do usuário em resumo, mais recentes primeiro |
 | GET    | `/api/library`              | sessão   | Biblioteca: livros escolhidos, cada um com suas trilhas |
 | PATCH  | `/api/playlists/{id}`       | sessão   | Edita nome e descrição |
+| DELETE | `/api/playlists/{id}`       | sessão   | Apaga a playlist do Reten e libera a vaga (a cópia no Spotify fica) |
 | DELETE | `/api/playlists/{id}/tracks/{trackId}` | sessão | Remove uma faixa |
 | GET    | `/api/playlists/{id}/replacements?q=` | sessão | Busca faixas no Spotify para substituir ou acrescentar |
 | POST   | `/api/playlists/{id}/tracks` | sessão  | Acrescenta uma faixa (dados relidos do Spotify) |
@@ -119,6 +120,7 @@ Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estáve
 - A IA recebe apenas metadados, sinopse e as impressões opcionais do leitor (máx. 500 caracteres, tratadas como
   dado, não como instrução). Nenhum texto do livro é enviado.
 - Limite: `RETEN_GENERATION_DAILY_LIMIT` gerações por usuário em 24 h (padrão 10), contando tentativas que falham.
+- Biblioteca: no máximo `RETEN_MAX_PLAYLISTS` playlists guardadas por usuário (padrão 5); geração que falha não ocupa vaga. Apagar libera a vaga, mas a tentativa continua contando no limite diário.
 - Modelo e raciocínio: `OPENAI_MODEL` (padrão `gpt-5-mini`) e `OPENAI_REASONING_EFFORT` (padrão `low`; deixe vazio
   para modelos sem raciocínio).
 

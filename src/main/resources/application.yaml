@@ -74,6 +74,7 @@ reten:
     reasoning-effort: ${OPENAI_REASONING_EFFORT:low}
   generation:
     daily-limit: ${RETEN_GENERATION_DAILY_LIMIT:10}
+    max-playlists: ${RETEN_MAX_PLAYLISTS:5}
     track-count: 24
   books:
     # Sem chave, a busca usa o Open Library. Com chave, usa o Google Books (sinopses melhores em português).

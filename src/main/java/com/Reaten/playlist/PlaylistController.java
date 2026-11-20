@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
  * POST   /api/playlists                         inicia a geração (202, status GENERATING)
  * GET    /api/playlists/usage                   gerações usadas nas últimas 24h
  * GET    /api/playlists/{id}                    estado e resultado
+ * DELETE /api/playlists/{id}                    apaga do Reten (libera vaga; a cópia no Spotify fica)
  * PATCH  /api/playlists/{id}                    edita nome e descrição
  * DELETE /api/playlists/{id}/tracks/{trackId}   remove uma faixa
  * GET    /api/playlists/{id}/replacements?q=    busca faixas no Spotify para substituir/acrescentar
@@ -65,6 +66,12 @@ class PlaylistController {
 	@GetMapping("/{id}")
 	PlaylistResponse get(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable UUID id) {
 		return service.get(user.id(), id);
+	}
+
+	@DeleteMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	void delete(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable UUID id) {
+		service.delete(user.id(), id);
 	}
 
 	@PatchMapping("/{id}")

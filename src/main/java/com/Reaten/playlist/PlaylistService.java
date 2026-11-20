@@ -58,6 +58,10 @@ public class PlaylistService {
 		UUID playlistId = transactions.execute(status -> {
 			playlists.lockUserForGeneration(userId.toString());
 			UsageResponse usage = usage(userId);
+			if (usage.playlistCount() >= usage.maxPlaylists()) {
+				throw ApiException.conflict("playlist_limit_reached",
+						"Você já tem " + usage.maxPlaylists() + " playlists. Apague uma na sua biblioteca para criar outra.");
+			}
 			if (usage.remaining() <= 0) {
 				throw new ApiException(HttpStatus.TOO_MANY_REQUESTS, "generation_limit_reached",
 						"Você usou as " + usage.limit() + " gerações das últimas 24 horas. A próxima libera às "
@@ -82,11 +86,19 @@ public class PlaylistService {
 	@Transactional(readOnly = true)
 	public UsageResponse usage(UUID userId) {
 		Instant since = Instant.now().minus(WINDOW);
-		int used = (int) playlists.countByUserIdAndCreatedAtAfter(userId, since);
+		int used = (int) playlists.countAttemptsSince(userId, since);
 		int remaining = Math.max(0, properties.dailyLimit() - used);
 		Instant resetsAt = remaining > 0 ? null
-				: playlists.oldestCreatedAfter(userId, since).map(oldest -> oldest.plus(WINDOW)).orElse(null);
-		return new UsageResponse(properties.dailyLimit(), used, remaining, resetsAt, recommender.isConfigured());
+				: playlists.oldestAttemptSince(userId, since).map(oldest -> oldest.plus(WINDOW)).orElse(null);
+		int playlistCount = (int) playlists.countOccupyingSlots(userId);
+		return new UsageResponse(properties.dailyLimit(), used, remaining, resetsAt, recommender.isConfigured(),
+				properties.maxPlaylists(), playlistCount);
+	}
+
+	/** Apaga a playlist do Reten (libera vaga). A cópia salva no Spotify continua na conta do usuário. */
+	@Transactional
+	public void delete(UUID userId, UUID playlistId) {
+		owned(userId, playlistId).markDeleted();
 	}
 
 	private Playlist owned(UUID userId, UUID playlistId) {

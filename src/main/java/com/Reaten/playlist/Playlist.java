@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.type.SqlTypes;
 
 import com.Reaten.ai.ListeningMode;
@@ -27,6 +28,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "playlists")
+// Playlists apagadas ficam invisíveis para toda consulta JPA; só o limite diário as conta (SQL nativo).
+@SQLRestriction("deleted_at IS NULL")
 public class Playlist {
 
 	public enum Status {
@@ -110,6 +113,9 @@ public class Playlist {
 
 	@Column(name = "spotify_saved_at")
 	private Instant spotifySavedAt;
+
+	@Column(name = "deleted_at")
+	private Instant deletedAt;
 
 	@OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("position asc")
@@ -239,6 +245,13 @@ public class Playlist {
 		this.spotifyPlaylistUrl = spotifyUrl;
 		Instant now = Instant.now();
 		this.spotifySavedAt = now;
+		this.updatedAt = now;
+	}
+
+	/** Apaga do Reten (exclusão lógica). A cópia salva no Spotify, se houver, não é tocada. */
+	void markDeleted() {
+		Instant now = Instant.now();
+		this.deletedAt = now;
 		this.updatedAt = now;
 	}
 

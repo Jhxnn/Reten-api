@@ -135,6 +135,11 @@ public final class PlaylistDtos {
 	}
 
 	/** @param resetsAt quando a próxima geração volta a ficar disponível (nulo se ainda há gerações livres) */
-	public record UsageResponse(int limit, int used, int remaining, Instant resetsAt, boolean aiConfigured) {
+	/**
+	 * @param maxPlaylists  limite de playlists guardadas por usuário
+	 * @param playlistCount playlists que ocupam vaga (não apagadas e que não falharam)
+	 */
+	public record UsageResponse(int limit, int used, int remaining, Instant resetsAt, boolean aiConfigured,
+			int maxPlaylists, int playlistCount) {
 	}
 }
