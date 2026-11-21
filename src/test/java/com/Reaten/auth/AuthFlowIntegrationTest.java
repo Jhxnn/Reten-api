@@ -41,7 +41,7 @@ class AuthFlowIntegrationTest {
 
 	@Test
 	void registerStartsSessionAndMeReturnsTheUser() throws Exception {
-		Cookie session = register("Ana Leitora", "Ana@Exemplo.com", "senha-segura-1");
+		Cookie session = register("Ana Leitora", "Ana@Exemplo.com", "Senha-segura-1");
 
 		mvc.perform(get("/api/auth/me").cookie(session))
 				.andExpect(status().isOk())
@@ -65,10 +65,10 @@ class AuthFlowIntegrationTest {
 
 	@Test
 	void duplicateEmailIsAConflict() throws Exception {
-		register("Bruno", "bruno@exemplo.com", "senha-segura-1");
+		register("Bruno", "bruno@exemplo.com", "Senha-segura-1");
 
 		mvc.perform(post("/api/auth/register").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-				.content(json("Outro Bruno", "BRUNO@exemplo.com", "outra-senha-1")))
+				.content(json("Outro Bruno", "BRUNO@exemplo.com", "Outra-senha-1")))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.code").value("email_taken"));
 	}
@@ -86,7 +86,7 @@ class AuthFlowIntegrationTest {
 
 	@Test
 	void wrongPasswordIsRejectedWithoutRevealingWhichFieldFailed() throws Exception {
-		register("Carla", "carla@exemplo.com", "senha-segura-1");
+		register("Carla", "carla@exemplo.com", "Senha-segura-1");
 
 		login("carla@exemplo.com", "senha-errada-1")
 				.andExpect(status().isUnauthorized())
@@ -98,7 +98,7 @@ class AuthFlowIntegrationTest {
 
 	@Test
 	void logoutEndsTheSession() throws Exception {
-		Cookie session = register("Davi", "davi@exemplo.com", "senha-segura-1");
+		Cookie session = register("Davi", "davi@exemplo.com", "Senha-segura-1");
 
 		mvc.perform(post("/api/auth/logout").with(csrf()).cookie(session)).andExpect(status().isNoContent());
 		mvc.perform(get("/api/auth/me").cookie(session)).andExpect(status().isUnauthorized());
@@ -106,7 +106,7 @@ class AuthFlowIntegrationTest {
 
 	@Test
 	void passwordResetChangesPasswordInvalidatesSessionsAndIsSingleUse() throws Exception {
-		Cookie oldSession = register("Elisa", "elisa@exemplo.com", "senha-antiga-1");
+		Cookie oldSession = register("Elisa", "elisa@exemplo.com", "Senha-antiga-1");
 
 		mvc.perform(post("/api/auth/password/forgot").with(csrf()).contentType(MediaType.APPLICATION_JSON)
 				.content("{\"email\":\"elisa@exemplo.com\"}"))
@@ -117,7 +117,7 @@ class AuthFlowIntegrationTest {
 		assertThat(url.getValue()).startsWith("http://127.0.0.1:5173/redefinir-senha?token=");
 		String token = url.getValue().substring(url.getValue().indexOf("token=") + 6);
 
-		String resetBody = "{\"token\":\"" + token + "\",\"password\":\"senha-nova-123\"}";
+		String resetBody = "{\"token\":\"" + token + "\",\"password\":\"Senha-nova-123\"}";
 		mvc.perform(post("/api/auth/password/reset").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(resetBody))
 				.andExpect(status().isNoContent());
 
@@ -126,8 +126,8 @@ class AuthFlowIntegrationTest {
 				.andExpect(jsonPath("$.code").value("invalid_reset_token"));
 
 		mvc.perform(get("/api/auth/me").cookie(oldSession)).andExpect(status().isUnauthorized());
-		login("elisa@exemplo.com", "senha-antiga-1").andExpect(status().isUnauthorized());
-		login("elisa@exemplo.com", "senha-nova-123").andExpect(status().isOk());
+		login("elisa@exemplo.com", "Senha-antiga-1").andExpect(status().isUnauthorized());
+		login("elisa@exemplo.com", "Senha-nova-123").andExpect(status().isOk());
 	}
 
 	@Test
@@ -136,6 +136,21 @@ class AuthFlowIntegrationTest {
 				.content("{\"email\":\"desconhecido@exemplo.com\"}"))
 				.andExpect(status().isAccepted());
 		verify(mailer, org.mockito.Mockito.never()).sendResetLink(anyString(), anyString(), anyString());
+	}
+
+	@Test
+	void weakPasswordsSayWhatIsMissing() throws Exception {
+		mvc.perform(post("/api/auth/register").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(json("Fraca", "fraca@exemplo.com", "semmaiuscula-1")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.fields.password").value("A senha precisa ter uma letra maiúscula."));
+		mvc.perform(post("/api/auth/register").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(json("Fraca", "fraca@exemplo.com", "curta")))
+				.andExpect(jsonPath("$.fields.password").value(
+						"A senha precisa ter pelo menos 8 caracteres, uma letra maiúscula e um caractere especial (ex.: ! @ # -)."));
+		mvc.perform(post("/api/auth/register").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(json("Forte", "forte@exemplo.com", "Árvore#lida")))
+				.andExpect(status().isCreated());
 	}
 
 	Cookie register(String name, String email, String password) throws Exception {

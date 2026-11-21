@@ -159,7 +159,7 @@ class SpotifyConnectionIntegrationTest {
 
 	private Cookie register(String email) throws Exception {
 		MvcResult result = mvc.perform(post("/api/auth/register").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-				.content("{\"name\":\"Teste\",\"email\":\"" + email + "\",\"password\":\"senha-segura-1\"}"))
+				.content("{\"name\":\"Teste\",\"email\":\"" + email + "\",\"password\":\"Senha-segura-1\"}"))
 				.andExpect(status().isCreated())
 				.andReturn();
 		return com.Reaten.SessionCookies.from(result.getResponse());

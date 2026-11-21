@@ -110,7 +110,7 @@ class EmailVerificationIntegrationTest {
 		verifyCode(session, lastCodeSentTo("certo@exemplo.com")).andExpect(status().isOk());
 
 		mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-				.content("{\"email\":\"certo@exemplo.com\",\"password\":\"senha-segura-1\"}"))
+				.content("{\"email\":\"certo@exemplo.com\",\"password\":\"Senha-segura-1\"}"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.emailVerified").value(true));
 	}
@@ -154,7 +154,7 @@ class EmailVerificationIntegrationTest {
 		clearInvocations(mailer);
 		return SessionCookies.from(mvc.perform(post("/api/auth/register").with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content("{\"name\":\"Leitora\",\"email\":\"" + email + "\",\"password\":\"senha-segura-1\"}"))
+				.content("{\"name\":\"Leitora\",\"email\":\"" + email + "\",\"password\":\"Senha-segura-1\"}"))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.emailVerified").value(false))
 				.andReturn().getResponse());

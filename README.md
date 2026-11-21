@@ -92,7 +92,7 @@ Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estáve
 
 - Sessão no servidor (Spring Session JDBC), cookie `RETEN_SESSION` HttpOnly + SameSite=Lax (Secure em produção).
 - Id de sessão trocado no login; token CSRF rotacionado no login.
-- Senhas com BCrypt. Tokens de redefinição: aleatórios (256 bits), guardados como SHA-256, 30 min, uso único.
+- Senhas com BCrypt. Senha nova (cadastro e redefinição): 8 a 72 caracteres, com letra maiúscula e caractere especial (validado no servidor e orientado no formulário). Tokens de redefinição: aleatórios (256 bits), guardados como SHA-256, 30 min, uso único.
 - Tokens do Spotify cifrados com AES-256-GCM (`RETEN_TOKEN_ENCRYPTION_KEY`), renovados automaticamente.
 
 ## Estado das integrações

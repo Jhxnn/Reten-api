@@ -24,7 +24,7 @@ public final class AuthDtos {
 			String email,
 
 			@NotBlank(message = "Crie uma senha.")
-			@Size(min = 8, max = 72, message = "A senha precisa ter entre 8 e 72 caracteres.")
+			@StrongPassword
 			String password) {
 	}
 
@@ -43,7 +43,7 @@ public final class AuthDtos {
 			@NotBlank String token,
 
 			@NotBlank(message = "Crie uma nova senha.")
-			@Size(min = 8, max = 72, message = "A senha precisa ter entre 8 e 72 caracteres.")
+			@StrongPassword
 			String password) {
 	}
 
