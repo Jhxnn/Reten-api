@@ -95,7 +95,7 @@ public class PlaylistService {
 				properties.maxPlaylists(), playlistCount);
 	}
 
-	/** Apaga a playlist do Reten (libera vaga). A cópia salva no Spotify continua na conta do usuário. */
+	/** Apaga a playlist do Resten (libera vaga). A cópia salva no Spotify continua na conta do usuário. */
 	@Transactional
 	public void delete(UUID userId, UUID playlistId) {
 		owned(userId, playlistId).markDeleted();

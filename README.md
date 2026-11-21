@@ -1,6 +1,6 @@
-# Reten
+# Resten
 
-Cada história tem uma trilha sonora. O Reten transforma livros em playlists do Spotify a partir da
+Cada história tem uma trilha sonora. O Resten transforma livros em playlists do Spotify a partir da
 atmosfera de cada obra, com interpretação por inteligência artificial.
 
 ## Estrutura
@@ -21,7 +21,7 @@ atmosfera de cada obra, com interpretação por inteligência artificial.
 └── docker-compose.yml                 Postgres + Mailpit para desenvolvimento
 ```
 
-O frontend (React + TypeScript + Vite) fica em [Reten-front](https://github.com/Jhxnn/Reten-front).
+O frontend (React + TypeScript + Vite) fica em [Resten-front](https://github.com/Jhxnn/Resten-front).
 Para desenvolver localmente, clone-o em `./frontend` (pasta ignorada por este repositório).
 
 Branches: `desenv` recebe o trabalho do dia a dia; `main` recebe apenas versões estáveis.
@@ -37,7 +37,7 @@ docker compose up -d          # Postgres (5434) e Mailpit (SMTP 1026, interface 
 ```
 
 ```bash
-git clone https://github.com/Jhxnn/Reten-front.git frontend
+git clone https://github.com/Jhxnn/Resten-front.git frontend
 cd frontend
 npm install
 npm run dev                   # http://127.0.0.1:5173 — /api é encaminhado para a API
@@ -68,16 +68,16 @@ Testes do backend usam Testcontainers (Docker precisa estar rodando): `./mvnw te
 | DELETE | `/api/spotify/connection`   | sessão   | Desconecta e apaga os tokens |
 | GET    | `/api/books/search?q=&by=`  | sessão   | Busca no catálogo (`by`: all, title, author, isbn) |
 | GET    | `/api/books/catalog?id=`    | sessão   | Detalhes de um livro do catálogo, com sinopse |
-| POST   | `/api/books/select`         | sessão   | Escolhe o livro: guarda no Reten e no histórico |
+| POST   | `/api/books/select`         | sessão   | Escolhe o livro: guarda no Resten e no histórico |
 | GET    | `/api/books/recent`         | sessão   | Livros escolhidos recentemente pelo usuário |
-| GET    | `/api/books/{id}`           | sessão   | Livro guardado no Reten |
+| GET    | `/api/books/{id}`           | sessão   | Livro guardado no Resten |
 | POST   | `/api/playlists`            | sessão   | Inicia a geração com IA (202, status `GENERATING`) |
 | GET    | `/api/playlists/{id}`       | sessão   | Estado e resultado da geração (`GENERATING`, `READY`, `FAILED`) |
 | GET    | `/api/playlists/usage`      | sessão   | Gerações nas últimas 24 h, vagas ocupadas na biblioteca e se a IA está configurada |
 | GET    | `/api/playlists?bookId=&limit=` | sessão | Playlists do usuário em resumo, mais recentes primeiro |
 | GET    | `/api/library`              | sessão   | Biblioteca: livros escolhidos, cada um com suas trilhas |
 | PATCH  | `/api/playlists/{id}`       | sessão   | Edita nome e descrição |
-| DELETE | `/api/playlists/{id}`       | sessão   | Apaga a playlist do Reten e libera a vaga (a cópia no Spotify fica) |
+| DELETE | `/api/playlists/{id}`       | sessão   | Apaga a playlist do Resten e libera a vaga (a cópia no Spotify fica) |
 | DELETE | `/api/playlists/{id}/tracks/{trackId}` | sessão | Remove uma faixa |
 | GET    | `/api/playlists/{id}/replacements?q=` | sessão | Busca faixas no Spotify para substituir ou acrescentar |
 | POST   | `/api/playlists/{id}/tracks` | sessão  | Acrescenta uma faixa (dados relidos do Spotify) |
@@ -107,7 +107,7 @@ Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estáve
 
 ### Confirmação de e-mail
 
-- No cadastro, o Reten envia um código de 6 dígitos. A conta já entra, mas até digitar o código só vê a tela
+- No cadastro, o Resten envia um código de 6 dígitos. A conta já entra, mas até digitar o código só vê a tela
   "Confirme seu e-mail" e a API responde `403` com `code: email_not_verified` fora de `/api/auth/**`.
 - O código vale 15 minutos e aceita 5 tentativas; só o hash fica no banco. Reenvio após 60 s, até 5 códigos por hora.
 - Dá para corrigir um e-mail digitado errado antes de confirmar. Redefinir a senha pelo link do e-mail também confirma.
@@ -158,14 +158,14 @@ Com a URL gerada (`https://<subdominio>.ngrok-free.app`):
 1. No `.env`: `RETEN_FRONTEND_URL=https://<subdominio>.ngrok-free.app` e
    `SPOTIFY_REDIRECT_URI=https://<subdominio>.ngrok-free.app/api/spotify/callback`; reinicie a API.
 2. Cadastre a mesma Redirect URI no Spotify Developer Dashboard.
-3. Use o Reten **sempre pela URL do ngrok** (o cookie de sessão é do host em que você entrou).
+3. Use o Resten **sempre pela URL do ngrok** (o cookie de sessão é do host em que você entrou).
 
 No plano gratuito a URL muda a cada `ngrok http`; reserve o domínio estático gratuito em
 https://dashboard.ngrok.com/domains e rode `ngrok http --url=<seu-dominio> 127.0.0.1:5173` para não precisar
 atualizar o Spotify toda vez. O Vite já aceita hosts `*.ngrok-free.app`, `*.ngrok-free.dev`, `*.ngrok.app` e `*.ngrok.dev`.
 
 > Em Development Mode, a Spotify permite no máximo 5 usuários cadastrados manualmente.
-> Por isso, conectar o Spotify é opcional no Reten: só é exigido para salvar a playlist na conta.
+> Por isso, conectar o Spotify é opcional no Resten: só é exigido para salvar a playlist na conta.
 
 ### Configurando o Google Books (opcional)
 

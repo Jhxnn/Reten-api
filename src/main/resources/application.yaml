@@ -73,7 +73,7 @@ reten:
     resend-after: 60s
     max-per-hour: 5
   mail:
-    from: ${RETEN_MAIL_FROM:Reten <nao-responda@reten.local>}
+    from: ${RETEN_MAIL_FROM:Resten <nao-responda@reten.local>}
   openai:
     api-key: ${OPENAI_API_KEY:}
     model: ${OPENAI_MODEL:gpt-5-mini}

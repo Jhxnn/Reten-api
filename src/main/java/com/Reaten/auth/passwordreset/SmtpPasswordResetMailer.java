@@ -34,10 +34,10 @@ class SmtpPasswordResetMailer implements PasswordResetMailer {
 		try {
 			mail.send(new Message(
 					toEmail,
-					"Redefinir sua senha do Reten",
+					"Redefinir sua senha do Resten",
 					"Use o link para criar uma nova senha.",
 					recipientName,
-					"Recebemos um pedido para redefinir a senha da sua conta no Reten. Para criar uma nova senha, use o botão abaixo.",
+					"Recebemos um pedido para redefinir a senha da sua conta no Resten. Para criar uma nova senha, use o botão abaixo.",
 					new Button("Criar nova senha", resetUrl),
 					"O link vale por " + minutes + " minutos e pode ser usado uma vez.",
 					"Se você não fez esse pedido, ignore este e-mail. Sua senha continua a mesma."));

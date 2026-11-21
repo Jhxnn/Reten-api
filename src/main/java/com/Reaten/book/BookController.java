@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
  * <pre>
  * GET  /api/books/search?q=&by=all|title|author|isbn   busca no catálogo externo
  * GET  /api/books/catalog?id=fonte:id                  detalhes (com sinopse) antes de escolher
- * POST /api/books/select                               escolhe o livro: guarda no Reten e no histórico
+ * POST /api/books/select                               escolhe o livro: guarda no Resten e no histórico
  * GET  /api/books/recent                               livros escolhidos recentemente pelo usuário
  * GET  /api/books/{id}                                 livro já guardado
  * </pre>

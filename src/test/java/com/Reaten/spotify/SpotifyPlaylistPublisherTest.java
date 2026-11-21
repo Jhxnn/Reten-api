@@ -50,7 +50,7 @@ class SpotifyPlaylistPublisherTest {
 		assertThat(published.url()).isEqualTo("https://open.spotify.com/playlist/37i9dQZF1DX");
 		var create = stub.requestsTo("POST /v1/me/playlists").getFirst();
 		assertThat(create.authorization()).isEqualTo("Bearer user-token");
-		assertThat(create.body()).contains("\"public\":false").contains("Para ler devagar. Com chuva. — Criada com o Reten.");
+		assertThat(create.body()).contains("\"public\":false").contains("Para ler devagar. Com chuva. — Criada com o Resten.");
 		assertThat(stub.requestsTo("PUT /v1/playlists/37i9dQZF1DX/items").getFirst().body())
 				.contains("spotify:track:aaaaaaaaaaaaaaaaaaaaaa").contains("spotify:track:bbbbbbbbbbbbbbbbbbbbbb");
 	}

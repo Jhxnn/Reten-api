@@ -42,7 +42,7 @@ public final class BookDtos {
 	public record SelectBookRequest(@NotBlank @Size(max = 140) String catalogId) {
 	}
 
-	/** Livro já guardado no Reten. */
+	/** Livro já guardado no Resten. */
 	public record BookResponse(
 			UUID id,
 			String catalogId,

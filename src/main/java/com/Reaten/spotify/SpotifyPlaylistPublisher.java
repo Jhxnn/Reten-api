@@ -98,7 +98,7 @@ class SpotifyPlaylistPublisher implements PlaylistPublisher {
 	/** A Spotify aceita descrições curtas e de uma linha só. */
 	static String spotifyDescription(String description) {
 		String text = description == null ? "" : description.replaceAll("\\s+", " ").strip();
-		String withCredit = text.isEmpty() ? "Criada com o Reten." : text + " — Criada com o Reten.";
+		String withCredit = text.isEmpty() ? "Criada com o Resten." : text + " — Criada com o Resten.";
 		return withCredit.length() <= MAX_DESCRIPTION ? withCredit : withCredit.substring(0, MAX_DESCRIPTION - 1) + "…";
 	}
 

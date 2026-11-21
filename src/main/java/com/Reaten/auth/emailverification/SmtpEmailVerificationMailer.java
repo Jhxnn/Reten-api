@@ -31,13 +31,13 @@ class SmtpEmailVerificationMailer implements EmailVerificationMailer {
 		try {
 			mail.send(new Message(
 					toEmail,
-					code + " é seu código do Reten",
+					code + " é seu código do Resten",
 					"Digite este código para confirmar seu e-mail e começar a ouvir seus livros.",
 					recipientName,
-					"Para confirmar seu e-mail e começar a transformar livros em trilhas sonoras, digite este código no Reten:",
+					"Para confirmar seu e-mail e começar a transformar livros em trilhas sonoras, digite este código no Resten:",
 					new Code(code),
 					"O código vale por " + minutes + " minutos e só pode ser usado uma vez.",
-					"Se você não criou uma conta no Reten, ignore este e-mail. Nenhuma conta será ativada sem o código."));
+					"Se você não criou uma conta no Resten, ignore este e-mail. Nenhuma conta será ativada sem o código."));
 		} catch (MailException ex) {
 			log.error("Falha ao enviar o código de confirmação de e-mail: {}", ex.getMessage());
 		}

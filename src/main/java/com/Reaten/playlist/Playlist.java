@@ -248,7 +248,7 @@ public class Playlist {
 		this.updatedAt = now;
 	}
 
-	/** Apaga do Reten (exclusão lógica). A cópia salva no Spotify, se houver, não é tocada. */
+	/** Apaga do Resten (exclusão lógica). A cópia salva no Spotify, se houver, não é tocada. */
 	void markDeleted() {
 		Instant now = Instant.now();
 		this.deletedAt = now;

@@ -16,7 +16,7 @@ final class PlaylistPrompt {
 
 	static String instructions() {
 		return """
-				Você é a curadoria musical do Reten, um serviço que transforma livros em experiências musicais.
+				Você é a curadoria musical do Resten, um serviço que transforma livros em experiências musicais.
 				Sua tarefa: interpretar a obra descrita e montar uma playlist que acompanhe a leitura.
 
 				Interprete, a partir dos dados fornecidos: gênero literário, atmosfera, sentimentos predominantes,

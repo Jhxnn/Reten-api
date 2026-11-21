@@ -9,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import jakarta.validation.constraints.NotBlank;
 
 /**
- * Configurações gerais do Reten, vindas de variáveis de ambiente (ver application.yaml).
+ * Configurações gerais do Resten, vindas de variáveis de ambiente (ver application.yaml).
  *
  * @param frontendUrl  origem pública do frontend; usada em links de e-mail e redirecionamentos do OAuth
  * @param security     segredos de criptografia
@@ -47,6 +47,6 @@ public record RetenProperties(
 	public record PasswordReset(@DefaultValue("30m") Duration ttl) {
 	}
 
-	public record Mail(@DefaultValue("Reten <nao-responda@reten.local>") String from) {
+	public record Mail(@DefaultValue("Resten <nao-responda@reten.local>") String from) {
 	}
 }

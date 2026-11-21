@@ -14,14 +14,14 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 /**
- * E-mails transacionais com a identidade do Reten: HTML em tabelas e estilos inline (o que os clientes de
+ * E-mails transacionais com a identidade do Resten: HTML em tabelas e estilos inline (o que os clientes de
  * e-mail aceitam), cabeçalho com a marca como imagem embutida (SVG e fontes próprias não funcionam no Gmail)
  * e uma versão em texto puro para quem não exibe HTML.
  */
 @Component
 public class BrandedMailSender {
 
-	private static final ClassPathResource HEADER = new ClassPathResource("mail/reten-header.png");
+	private static final ClassPathResource HEADER = new ClassPathResource("mail/brand-header.png");
 
 	// Paleta "verde profundo" do app
 	private static final String NIGHT = "#10241e";
@@ -69,7 +69,7 @@ public class BrandedMailSender {
 			helper.setTo(message.to());
 			helper.setSubject(message.subject());
 			helper.setText(plainText(message), html(message));
-			helper.addInline("reten-header", HEADER, "image/png");
+			helper.addInline("brand-header", HEADER, "image/png");
 		} catch (MessagingException ex) {
 			throw new MailPreparationException("Não foi possível montar o e-mail", ex);
 		}
@@ -92,7 +92,7 @@ public class BrandedMailSender {
 
 				%s
 
-				Reten · Cada história tem uma trilha sonora.
+				Resten · Cada história tem uma trilha sonora.
 				""".formatted(m.recipientName(), m.intro(), highlight, m.note(), m.footnote());
 	}
 
@@ -133,7 +133,7 @@ public class BrandedMailSender {
 				  <tr><td align="center" style="padding:32px 16px;">
 				    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%%" style="max-width:520px;">
 				      <tr><td style="background:%s;border-radius:8px 8px 0 0;padding:26px 32px;">
-				        <img src="cid:reten-header" width="150" height="48" alt="Reten" style="display:block;border:0;">
+				        <img src="cid:brand-header" width="150" height="48" alt="Resten" style="display:block;border:0;">
 				      </td></tr>
 				      <tr><td style="background:%s;border-radius:0 0 8px 8px;padding:36px 32px 32px;">
 				        <h1 style="margin:0 0 14px;font-family:%s;font-size:28px;line-height:1.2;font-weight:normal;color:%s;">Olá, %s.</h1>

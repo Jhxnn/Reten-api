@@ -30,7 +30,7 @@ public record CatalogBook(
 		categories = categories == null ? List.of() : List.copyOf(categories);
 	}
 
-	/** Id público e estável no Reten: {@code fonte:idExterno}. */
+	/** Id público e estável no Resten: {@code fonte:idExterno}. */
 	public String catalogId() {
 		return source + ":" + externalId;
 	}

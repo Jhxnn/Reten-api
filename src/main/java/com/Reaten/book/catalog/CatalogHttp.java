@@ -32,7 +32,7 @@ final class CatalogHttp {
 		return RestClient.builder()
 				.baseUrl(baseUrl)
 				.requestFactory(factory)
-				.defaultHeader("User-Agent", "Reten/0.1")
+				.defaultHeader("User-Agent", "Resten/0.1")
 				.build();
 	}
 

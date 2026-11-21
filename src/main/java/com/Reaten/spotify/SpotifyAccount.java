@@ -8,7 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-/** Conexão OAuth de um usuário do Reten com sua conta Spotify. Tokens sempre cifrados. */
+/** Conexão OAuth de um usuário do Resten com sua conta Spotify. Tokens sempre cifrados. */
 @Entity
 @Table(name = "spotify_accounts")
 public class SpotifyAccount {

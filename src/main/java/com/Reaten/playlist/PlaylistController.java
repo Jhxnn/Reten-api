@@ -31,7 +31,7 @@ import jakarta.validation.Valid;
  * POST   /api/playlists                         inicia a geração (202, status GENERATING)
  * GET    /api/playlists/usage                   gerações usadas nas últimas 24h
  * GET    /api/playlists/{id}                    estado e resultado
- * DELETE /api/playlists/{id}                    apaga do Reten (libera vaga; a cópia no Spotify fica)
+ * DELETE /api/playlists/{id}                    apaga do Resten (libera vaga; a cópia no Spotify fica)
  * PATCH  /api/playlists/{id}                    edita nome e descrição
  * DELETE /api/playlists/{id}/tracks/{trackId}   remove uma faixa
  * GET    /api/playlists/{id}/replacements?q=    busca faixas no Spotify para substituir/acrescentar
