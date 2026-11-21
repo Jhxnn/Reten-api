@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy;
@@ -24,6 +25,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 
+import com.Reaten.auth.emailverification.EmailVerificationFilter;
+import com.Reaten.auth.emailverification.EmailVerificationService;
 import com.Reaten.shared.security.ProblemJsonAuthenticationEntryPoint;
 
 /**
@@ -32,6 +35,7 @@ import com.Reaten.shared.security.ProblemJsonAuthenticationEntryPoint;
  * <li>CSRF no modo SPA: cookie {@code XSRF-TOKEN} legível pelo JS + cabeçalho {@code X-XSRF-TOKEN}.</li>
  * <li>Login/cadastro são endpoints JSON próprios; a sessão é criada por {@link com.Reaten.auth.SessionAuthenticator}.</li>
  * <li>Respostas 401 em JSON, nunca redirecionamento para página de login.</li>
+ * <li>Contas com e-mail não confirmado só alcançam {@code /api/auth/**} ({@link EmailVerificationFilter}).</li>
  * </ul>
  */
 @Configuration
@@ -40,8 +44,8 @@ public class SecurityConfig {
 	public static final String SESSION_COOKIE = "RETEN_SESSION";
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityContextRepository securityContextRepository)
-			throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityContextRepository securityContextRepository,
+			EmailVerificationService emailVerification, RetenProperties properties) throws Exception {
 		http
 				.csrf(csrf -> csrf.spa())
 				.authorizeHttpRequests(auth -> auth
@@ -62,6 +66,8 @@ public class SecurityConfig {
 						.logoutUrl("/api/auth/logout")
 						.deleteCookies(SESSION_COOKIE)
 						.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
+				.addFilterAfter(new EmailVerificationFilter(emailVerification, properties.emailVerification().required()),
+						AuthorizationFilter.class)
 				.requestCache(cache -> cache.disable())
 				.formLogin(AbstractHttpConfigurer::disable)
 				.httpBasic(AbstractHttpConfigurer::disable);

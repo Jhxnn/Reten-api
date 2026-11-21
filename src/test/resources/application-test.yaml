@@ -1,5 +1,13 @@
 # Perfil de testes: chave de criptografia fixa e Spotify apontando para endereços fictícios.
+# SMTP numa porta fechada: nenhum e-mail sai dos testes (os que conferem e-mails usam um mailer simulado).
+spring:
+  mail:
+    host: 127.0.0.1
+    port: 1
 reten:
+  # Testes de outros módulos não passam pela confirmação; EmailVerificationIntegrationTest a liga.
+  email-verification:
+    required: false
   frontend-url: http://127.0.0.1:5173
   security:
     token-encryption-key: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=

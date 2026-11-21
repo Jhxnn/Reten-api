@@ -65,6 +65,13 @@ reten:
     token-encryption-key: ${RETEN_TOKEN_ENCRYPTION_KEY:}
   password-reset:
     ttl: 30m
+  # Código de 6 dígitos enviado no cadastro; sem ele o app fica bloqueado.
+  email-verification:
+    required: ${RETEN_EMAIL_VERIFICATION_REQUIRED:true}
+    code-ttl: 15m
+    max-attempts: 5
+    resend-after: 60s
+    max-per-hour: 5
   mail:
     from: ${RETEN_MAIL_FROM:Reten <nao-responda@reten.local>}
   openai:

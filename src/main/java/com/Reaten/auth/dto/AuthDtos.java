@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /** Contratos HTTP do módulo de autenticação. */
@@ -46,6 +47,20 @@ public final class AuthDtos {
 			String password) {
 	}
 
-	public record CurrentUserResponse(UUID id, String name, String email) {
+	public record VerifyEmailRequest(
+			@NotBlank(message = "Digite o código.")
+			@Pattern(regexp = "\\s*\\d{6}\\s*", message = "O código tem 6 números.")
+			String code) {
+	}
+
+	public record ChangeEmailRequest(
+			@NotBlank(message = "Informe seu e-mail.")
+			@Email(message = "Este e-mail não parece válido.")
+			@Size(max = 254)
+			String email) {
+	}
+
+	/** @param emailVerified falso até o código enviado por e-mail ser digitado; o app fica bloqueado enquanto isso */
+	public record CurrentUserResponse(UUID id, String name, String email, boolean emailVerified) {
 	}
 }

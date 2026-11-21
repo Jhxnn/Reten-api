@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.Reaten.auth.dto.AuthDtos.CurrentUserResponse;
 import com.Reaten.auth.dto.AuthDtos.LoginRequest;
 import com.Reaten.auth.dto.AuthDtos.RegisterRequest;
+import com.Reaten.auth.emailverification.EmailVerificationService;
 import com.Reaten.shared.exception.ApiException;
 import com.Reaten.user.Emails;
 import com.Reaten.user.User;
@@ -31,16 +32,21 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final SessionAuthenticator sessionAuthenticator;
+	private final EmailVerificationService emailVerification;
 
 	AuthService(UserRepository users, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
-			SessionAuthenticator sessionAuthenticator) {
+			SessionAuthenticator sessionAuthenticator, EmailVerificationService emailVerification) {
 		this.users = users;
 		this.passwordEncoder = passwordEncoder;
 		this.authenticationManager = authenticationManager;
 		this.sessionAuthenticator = sessionAuthenticator;
+		this.emailVerification = emailVerification;
 	}
 
-	/** Cria a conta e já inicia a sessão — o usuário não precisa entrar de novo logo após se cadastrar. */
+	/**
+	 * Cria a conta, envia o código de confirmação e já inicia a sessão — o usuário não precisa entrar
+	 * de novo logo após se cadastrar. Até confirmar o e-mail, o app fica bloqueado.
+	 */
 	@Transactional
 	public CurrentUserResponse register(RegisterRequest request, HttpServletRequest http, HttpServletResponse response) {
 		String email = Emails.normalize(request.email());
@@ -49,6 +55,7 @@ public class AuthService {
 		}
 		User user = users.saveAndFlush(new User(request.name().strip(), email, passwordEncoder.encode(request.password())));
 		log.info("Nova conta criada: {}", user.getId());
+		emailVerification.sendInitialCode(user);
 		return login(new LoginRequest(email, request.password()), http, response);
 	}
 
@@ -64,7 +71,37 @@ public class AuthService {
 		return toResponse((AuthenticatedUser) authentication.getPrincipal());
 	}
 
-	public CurrentUserResponse toResponse(AuthenticatedUser user) {
-		return new CurrentUserResponse(user.id(), user.name(), user.email());
+	/** Lido do banco: nome, e-mail e confirmação mudam depois que a sessão começou. */
+	@Transactional(readOnly = true)
+	public CurrentUserResponse toResponse(AuthenticatedUser principal) {
+		return users.findById(principal.id())
+				.map(AuthService::toResponse)
+				.orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "unauthenticated", "Entre na sua conta para continuar."));
+	}
+
+	public CurrentUserResponse verifyEmail(AuthenticatedUser principal, String code) {
+		return toResponse(emailVerification.verify(principal.id(), code));
+	}
+
+	public void resendVerificationCode(AuthenticatedUser principal) {
+		emailVerification.resend(principal.id());
+	}
+
+	/**
+	 * Troca o e-mail ainda não confirmado. O principal da sessão é refeito, porque o e-mail é o nome
+	 * pelo qual as sessões da conta são encontradas (ex.: para encerrá-las ao redefinir a senha).
+	 */
+	public CurrentUserResponse changeEmail(AuthenticatedUser principal, String email, HttpServletRequest http,
+			HttpServletResponse response) {
+		User user = emailVerification.changeEmail(principal.id(), email);
+		AuthenticatedUser updated = new AuthenticatedUser(user);
+		updated.eraseCredentials();
+		sessionAuthenticator.establish(
+				UsernamePasswordAuthenticationToken.authenticated(updated, null, updated.getAuthorities()), http, response);
+		return toResponse(user);
+	}
+
+	private static CurrentUserResponse toResponse(User user) {
+		return new CurrentUserResponse(user.getId(), user.getName(), user.getEmail(), user.isEmailVerified());
 	}
 }

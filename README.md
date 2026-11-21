@@ -59,6 +59,9 @@ Testes do backend usam Testcontainers (Docker precisa estar rodando): `./mvnw te
 | GET    | `/api/auth/me`              | sessão   | Usuário atual |
 | POST   | `/api/auth/password/forgot` | público  | Envia link de redefinição (sempre 202) |
 | POST   | `/api/auth/password/reset`  | público  | Redefine a senha e encerra todas as sessões |
+| POST   | `/api/auth/email/verify`    | sessão   | Confirma o e-mail com o código de 6 dígitos |
+| POST   | `/api/auth/email/resend`    | sessão   | Envia um novo código (espera de 60 s, até 5 por hora) |
+| PUT    | `/api/auth/email`           | sessão   | Troca o e-mail ainda não confirmado e envia um código para ele |
 | GET    | `/api/spotify/connection`   | sessão   | Estado da conexão Spotify |
 | GET    | `/api/spotify/authorize`    | sessão   | Redireciona para o consentimento da Spotify |
 | GET    | `/api/spotify/callback`     | público* | Retorno do OAuth; redireciona para o frontend |
@@ -97,10 +100,21 @@ Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estáve
 | Integração      | Situação |
 | --------------- | -------- |
 | PostgreSQL      | Configurado (Flyway) |
-| E-mail (SMTP)   | Funcionando com Mailpit em desenvolvimento; produção requer um provedor SMTP |
+| E-mail (SMTP)   | Funcionando com Mailpit em desenvolvimento; para envio real, um provedor SMTP (ex.: Gmail com senha de app) |
 | Livros          | **Open Library** funcionando sem chave (edições em português via `lang=por`; sinopses geralmente em inglês). **Google Books** é usado automaticamente quando `GOOGLE_BOOKS_API_KEY` estiver definido — a cota anônima dele está zerada |
 | Spotify Web API | OAuth, busca/verificação de faixas (token do app) e criação/atualização de playlists implementados e testados contra servidor simulado, já nos endpoints de fev/2026. **Precisa de `SPOTIFY_CLIENT_ID`/`SECRET` para funcionar de verdade**; sem eles, as sugestões ficam como "não verificadas" e salvar fica indisponível |
 | OpenAI API      | Implementada (Responses API, Structured Outputs estrito, validação e novas tentativas) e testada com servidor simulado. **Precisa de `OPENAI_API_KEY` para gerar de verdade**; sem ela, a geração responde `ai_not_configured` |
+
+### Confirmação de e-mail
+
+- No cadastro, o Reten envia um código de 6 dígitos. A conta já entra, mas até digitar o código só vê a tela
+  "Confirme seu e-mail" e a API responde `403` com `code: email_not_verified` fora de `/api/auth/**`.
+- O código vale 15 minutos e aceita 5 tentativas; só o hash fica no banco. Reenvio após 60 s, até 5 códigos por hora.
+- Dá para corrigir um e-mail digitado errado antes de confirmar. Redefinir a senha pelo link do e-mail também confirma.
+- Contas criadas antes desta mudança ficaram confirmadas pela migração V8.
+- Envio real pelo Gmail: gere uma senha de app (Conta Google > Segurança > Verificação em duas etapas > Senhas de app)
+  e preencha no `.env` as variáveis comentadas no `.env.example` (`smtp.gmail.com`, porta 587, STARTTLS).
+  O remetente (`RETEN_MAIL_FROM`) precisa ser o mesmo endereço Gmail. Limite do Gmail: cerca de 500 e-mails por dia.
 
 ### Verificação no Spotify
 

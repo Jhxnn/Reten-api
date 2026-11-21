@@ -67,6 +67,8 @@ public class PasswordResetService {
 		User user = users.findById(resetToken.getUserId())
 				.orElseThrow(() -> ApiException.badRequest("invalid_reset_token", "Conta não encontrada."));
 		user.changePassword(passwordEncoder.encode(newPassword));
+		// Abrir o link enviado ao endereço prova que ele pertence à pessoa.
+		user.markEmailVerified(now);
 		resetToken.markUsed(now);
 		tokens.invalidatePending(user.getId(), now);
 

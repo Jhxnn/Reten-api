@@ -28,7 +28,27 @@ public class User {
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private Instant createdAt;
 
+	/** Nulo até o leitor digitar o código enviado para {@link #email}. */
+	@Column(name = "email_verified_at")
+	private Instant emailVerifiedAt;
+
 	protected User() {
+	}
+
+	public boolean isEmailVerified() {
+		return emailVerifiedAt != null;
+	}
+
+	public void markEmailVerified(Instant now) {
+		if (emailVerifiedAt == null) {
+			emailVerifiedAt = now;
+		}
+	}
+
+	/** Troca o e-mail (já normalizado); o novo endereço precisa ser confirmado de novo. */
+	public void changeEmail(String normalizedEmail) {
+		this.email = normalizedEmail;
+		this.emailVerifiedAt = null;
 	}
 
 	public User(String name, String email, String passwordHash) {

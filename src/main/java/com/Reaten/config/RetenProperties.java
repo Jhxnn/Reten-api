@@ -22,7 +22,23 @@ public record RetenProperties(
 		@NotBlank String frontendUrl,
 		Security security,
 		PasswordReset passwordReset,
-		Mail mail) {
+		Mail mail,
+		EmailVerification emailVerification) {
+
+	/**
+	 * @param required    exige o código antes de liberar o app (desligado só nos testes que não tratam disso)
+	 * @param codeTtl     validade de cada código
+	 * @param maxAttempts tentativas erradas antes de o código ser invalidado
+	 * @param resendAfter espera mínima entre dois envios
+	 * @param maxPerHour  envios por conta em uma hora
+	 */
+	public record EmailVerification(
+			@DefaultValue("true") boolean required,
+			@DefaultValue("15m") Duration codeTtl,
+			@DefaultValue("5") int maxAttempts,
+			@DefaultValue("60s") Duration resendAfter,
+			@DefaultValue("5") int maxPerHour) {
+	}
 
 	/** @param tokenEncryptionKey chave AES-256 em Base64 (32 bytes) usada para cifrar tokens de terceiros */
 	public record Security(@NotBlank String tokenEncryptionKey) {
