@@ -7,9 +7,13 @@ spring:
     import: optional:file:.env[.properties]
 
   datasource:
-    url: jdbc:postgresql://${RETEN_DB_HOST:localhost}:${RETEN_DB_PORT:5434}/${RETEN_DB_NAME:reten}
+    # RETEN_DB_PARAMS acrescenta parâmetros à URL; em produção (Supabase): ?sslmode=require
+    url: jdbc:postgresql://${RETEN_DB_HOST:localhost}:${RETEN_DB_PORT:5434}/${RETEN_DB_NAME:reten}${RETEN_DB_PARAMS:}
     username: ${RETEN_DB_USER:reten}
     password: ${RETEN_DB_PASSWORD:}
+    hikari:
+      # Bancos gratuitos aceitam poucas conexões; em produção use 5.
+      maximum-pool-size: ${RETEN_DB_POOL_SIZE:10}
 
   jpa:
     open-in-view: false
@@ -51,7 +55,8 @@ spring:
       mail.smtp.timeout: 5000
 
 server:
-  port: ${RETEN_SERVER_PORT:8090}
+  # PORT é definida pelo Render; localmente vale RETEN_SERVER_PORT.
+  port: ${PORT:${RETEN_SERVER_PORT:8090}}
   error:
     include-stacktrace: never
     include-message: never

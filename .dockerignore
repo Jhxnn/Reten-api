@@ -1,0 +1,10 @@
+target/
+frontend/
+prints/
+.env
+.env.*
+.git/
+.idea/
+.vscode/
+.claude/
+*.log
