@@ -38,8 +38,9 @@ spring:
       enabled: true
 
   # Sessões guardadas no Postgres; as tabelas são criadas pelo Flyway (V3).
+  # timeout vale para quem entra sem "manter conectado" (o cookie também some ao fechar o navegador).
   session:
-    timeout: 14d
+    timeout: 12h
     jdbc:
       initialize-schema: never
 
@@ -66,6 +67,8 @@ reten:
   # Cookie RETEN_SESSION: HttpOnly e SameSite=Lax sempre (ver SessionConfig); Secure em produção (HTTPS).
   session:
     cookie-secure: ${RETEN_COOKIE_SECURE:false}
+    # "Manter conectado": a sessão dura este tempo sem uso, mesmo fechando o navegador.
+    remember-me: 30d
   security:
     token-encryption-key: ${RETEN_TOKEN_ENCRYPTION_KEY:}
   password-reset:

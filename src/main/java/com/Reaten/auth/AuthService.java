@@ -56,7 +56,8 @@ public class AuthService {
 		User user = users.saveAndFlush(new User(request.name().strip(), email, passwordEncoder.encode(request.password())));
 		log.info("Nova conta criada: {}", user.getId());
 		emailVerification.sendInitialCode(user);
-		return login(new LoginRequest(email, request.password()), http, response);
+		// Quem acabou de criar a conta continua conectado, como no "manter conectado".
+		return login(new LoginRequest(email, request.password(), true), http, response);
 	}
 
 	public CurrentUserResponse login(LoginRequest request, HttpServletRequest http, HttpServletResponse response) {
@@ -67,7 +68,7 @@ public class AuthService {
 		} catch (AuthenticationException ex) {
 			throw new ApiException(HttpStatus.UNAUTHORIZED, "invalid_credentials", "E-mail ou senha incorretos.");
 		}
-		sessionAuthenticator.establish(authentication, http, response);
+		sessionAuthenticator.establish(authentication, request.remember(), http, response);
 		return toResponse((AuthenticatedUser) authentication.getPrincipal());
 	}
 
@@ -96,7 +97,7 @@ public class AuthService {
 		User user = emailVerification.changeEmail(principal.id(), email);
 		AuthenticatedUser updated = new AuthenticatedUser(user);
 		updated.eraseCredentials();
-		sessionAuthenticator.establish(
+		sessionAuthenticator.reestablish(
 				UsernamePasswordAuthenticationToken.authenticated(updated, null, updated.getAuthorities()), http, response);
 		return toResponse(user);
 	}

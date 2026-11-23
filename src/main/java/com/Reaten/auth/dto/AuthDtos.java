@@ -28,9 +28,15 @@ public final class AuthDtos {
 			String password) {
 	}
 
+	/** @param rememberMe "manter conectado": a sessão sobrevive ao fechamento do navegador (ausente = não). */
 	public record LoginRequest(
 			@NotBlank(message = "Informe seu e-mail.") String email,
-			@NotBlank(message = "Informe sua senha.") String password) {
+			@NotBlank(message = "Informe sua senha.") String password,
+			Boolean rememberMe) {
+
+		public boolean remember() {
+			return Boolean.TRUE.equals(rememberMe);
+		}
 	}
 
 	public record ForgotPasswordRequest(
