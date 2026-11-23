@@ -23,7 +23,7 @@ public final class PlaylistDtos {
 			@Size(max = 500, message = "Use no máximo 500 caracteres.") String notes) {
 	}
 
-	/** Limites da Spotify: nome até 100 caracteres; a descrição enviada é encurtada para 300. */
+	/** Limites do Spotify: nome até 100 caracteres; a descrição enviada é encurtada para 300. */
 	public record UpdateRequest(
 			@NotBlank(message = "Dê um nome à playlist.") @Size(max = 100, message = "Use no máximo 100 caracteres.") String name,
 			@Size(max = 1000, message = "Use no máximo 1000 caracteres.") String description) {

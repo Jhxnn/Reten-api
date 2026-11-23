@@ -3,7 +3,7 @@ package com.Reaten.spotify.client;
 import java.time.Duration;
 
 /**
- * Porta para os endpoints de autorização e perfil da Spotify.
+ * Porta para os endpoints de autorização e perfil do Spotify.
  * Isola o restante do sistema dos detalhes HTTP e permite substituir a implementação em testes.
  */
 public interface SpotifyAuthClient {
@@ -20,7 +20,7 @@ public interface SpotifyAuthClient {
 	SpotifyProfile currentProfile(String accessToken);
 
 	/**
-	 * @param refreshToken pode vir nulo numa renovação — a Spotify só envia um novo quando rotaciona o token
+	 * @param refreshToken pode vir nulo numa renovação — o Spotify só envia um novo quando rotaciona o token
 	 */
 	record TokenGrant(String accessToken, String refreshToken, String scope, Duration expiresIn) {
 	}

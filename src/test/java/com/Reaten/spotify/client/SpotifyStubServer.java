@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.sun.net.httpserver.HttpServer;
 
-/** Servidor HTTP local que imita a Spotify: respostas enfileiradas por "MÉTODO caminho". */
+/** Servidor HTTP local que imita o Spotify: respostas enfileiradas por "MÉTODO caminho". */
 public class SpotifyStubServer implements AutoCloseable {
 
 	public record Reply(int status, String body) {

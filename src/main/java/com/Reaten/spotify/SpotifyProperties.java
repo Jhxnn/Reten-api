@@ -4,10 +4,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
 /**
- * Credenciais e endereços da Spotify Web API. clientId/clientSecret vazios significam
+ * Credenciais e endereços da Web API do Spotify. clientId/clientSecret vazios significam
  * "integração não configurada" — os endpoints respondem isso explicitamente em vez de falhar em silêncio.
  *
- * @param redirectUri precisa ser idêntica à cadastrada no Spotify Developer Dashboard. A Spotify não aceita
+ * @param redirectUri precisa ser idêntica à cadastrada no Spotify Developer Dashboard. O Spotify não aceita
  *                    {@code localhost}: em desenvolvimento use {@code http://127.0.0.1:5173/api/spotify/callback}.
  */
 @ConfigurationProperties(prefix = "reten.spotify")

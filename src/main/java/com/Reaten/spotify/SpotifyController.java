@@ -25,8 +25,8 @@ import jakarta.servlet.http.HttpSession;
  * Conexão com o Spotify.
  * <pre>
  * GET    /api/spotify/connection   estado da conexão do usuário
- * GET    /api/spotify/authorize    redireciona para o consentimento da Spotify (navegação do browser; ?voltar=/caminho)
- * GET    /api/spotify/callback     retorno da Spotify; redireciona para o frontend com o resultado
+ * GET    /api/spotify/authorize    redireciona para o consentimento do Spotify (navegação do browser; ?voltar=/caminho)
+ * GET    /api/spotify/callback     retorno do Spotify; redireciona para o frontend com o resultado
  * DELETE /api/spotify/connection   desconecta (apaga os tokens)
  * </pre>
  */

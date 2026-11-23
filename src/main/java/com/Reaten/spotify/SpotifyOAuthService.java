@@ -15,7 +15,7 @@ import com.Reaten.spotify.client.SpotifyAuthClient.TokenGrant;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * Fluxo Authorization Code da Spotify. O {@code state} é guardado na sessão do usuário
+ * Fluxo Authorization Code do Spotify. O {@code state} é guardado na sessão do usuário
  * e conferido no retorno, protegendo contra CSRF no callback.
  */
 @Service

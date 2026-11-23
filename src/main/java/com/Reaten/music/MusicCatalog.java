@@ -11,7 +11,7 @@ public interface MusicCatalog {
 
 	boolean isConfigured();
 
-	/** @param limit no máximo 10 (limite da Spotify Web API em Development Mode) */
+	/** @param limit no máximo 10 (limite da Web API do Spotify em Development Mode) */
 	List<CatalogTrack> searchTracks(String query, int limit);
 
 	Optional<CatalogTrack> findTrack(String id);

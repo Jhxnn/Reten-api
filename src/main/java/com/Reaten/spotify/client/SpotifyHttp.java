@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientResponseException;
 
 import com.Reaten.spotify.client.SpotifyApiException.Kind;
 
-/** Infraestrutura HTTP comum aos clientes da Spotify: timeouts e tradução de erros. */
+/** Infraestrutura HTTP comum aos clientes do Spotify: timeouts e tradução de erros. */
 public final class SpotifyHttp {
 
 	private SpotifyHttp() {
@@ -26,7 +26,7 @@ public final class SpotifyHttp {
 		return RestClient.builder().baseUrl(baseUrl).requestFactory(factory).build();
 	}
 
-	/** Traduz erros HTTP da Spotify para categorias que o domínio entende. */
+	/** Traduz erros HTTP do Spotify para categorias que o domínio entende. */
 	public static <T> T call(Supplier<T> request) {
 		try {
 			return request.get();
@@ -39,13 +39,13 @@ public final class SpotifyHttp {
 				throw new SpotifyApiException(Kind.TOKEN_EXPIRED, "Token Spotify expirado ou inválido", null, ex);
 			}
 			if (status == HttpStatus.FORBIDDEN) {
-				throw new SpotifyApiException(Kind.USER_NOT_ALLOWED, "Acesso negado pela Spotify", null, ex);
+				throw new SpotifyApiException(Kind.USER_NOT_ALLOWED, "Acesso negado pelo Spotify", null, ex);
 			}
 			if (status == HttpStatus.NOT_FOUND) {
-				throw new SpotifyApiException(Kind.NOT_FOUND, "Recurso não encontrado na Spotify", null, ex);
+				throw new SpotifyApiException(Kind.NOT_FOUND, "Recurso não encontrado no Spotify", null, ex);
 			}
 			if (status == HttpStatus.TOO_MANY_REQUESTS) {
-				throw new SpotifyApiException(Kind.RATE_LIMITED, "Limite de requisições da Spotify atingido",
+				throw new SpotifyApiException(Kind.RATE_LIMITED, "Limite de requisições do Spotify atingido",
 						retryAfter(ex.getResponseHeaders()), ex);
 			}
 			throw new SpotifyApiException(Kind.UNAVAILABLE, "Spotify respondeu " + ex.getStatusCode(), null, ex);

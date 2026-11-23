@@ -2,7 +2,7 @@ package com.Reaten.spotify.client;
 
 import java.time.Duration;
 
-/** Falha ao falar com a Spotify, já classificada para quem chama decidir o que fazer. */
+/** Falha ao falar com o Spotify, já classificada para quem chama decidir o que fazer. */
 public class SpotifyApiException extends RuntimeException {
 
 	public enum Kind {

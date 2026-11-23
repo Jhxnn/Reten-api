@@ -25,7 +25,7 @@ import com.Reaten.playlist.PlaylistRecommendation.MatchStatus;
  * <li>Busca de campo: {@code track:"título" artist:"artista"} (até 10 resultados, para a gravação original ter chance de aparecer).</li>
  * <li>Se não houver correspondência, busca livre {@code título artista} (até 10).</li>
  * </ol>
- * Poucas buscas em paralelo, porque a cota da Spotify em Development Mode é compartilhada pelo app inteiro.
+ * Poucas buscas em paralelo, porque a cota do Spotify em Development Mode é compartilhada pelo app inteiro.
  * A mesma faixa encontrada para duas sugestões entra uma vez só.
  */
 @Component

@@ -86,7 +86,7 @@ class HttpSpotifyAuthClient implements SpotifyAuthClient {
 				.retrieve()
 				.body(TokenBody.class));
 		if (body == null || body.accessToken() == null) {
-			throw new SpotifyApiException(Kind.UNAVAILABLE, "Resposta de token vazia da Spotify", null, null);
+			throw new SpotifyApiException(Kind.UNAVAILABLE, "Resposta de token vazia do Spotify", null, null);
 		}
 		return new TokenGrant(body.accessToken(), body.refreshToken(), body.scope(), Duration.ofSeconds(body.expiresIn()));
 	}

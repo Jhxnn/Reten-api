@@ -98,7 +98,7 @@ class TrackMatcherTest {
 
 	@Test
 	void prefersTheOriginalSoundtrackOverACompilationWithTheLiteralTitle() {
-		// Caso real (resultados da Spotify, na ordem): o original se chama "New Moon (The Meadow)";
+		// Caso real (resultados do Spotify, na ordem): o original se chama "New Moon (The Meadow)";
 		// a coletânea com intérprete extra (Stanislav Gallin) tem o título literal "The Meadow".
 		var match = matcher.bestMatch("The Meadow", "Alexandre Desplat", List.of(
 				onAlbum("original", "New Moon (The Meadow)", "The Twilight Saga: New Moon (Original Motion Picture Soundtrack)",

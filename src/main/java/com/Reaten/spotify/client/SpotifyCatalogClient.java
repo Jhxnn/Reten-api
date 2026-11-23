@@ -135,7 +135,7 @@ public class SpotifyCatalogClient implements MusicCatalog {
 			SpotifyAuthClient.TokenGrant grant = auth.clientCredentials();
 			appToken = grant.accessToken();
 			appTokenExpiresAt = Instant.now().plus(grant.expiresIn());
-			log.debug("Token de app da Spotify renovado");
+			log.debug("Token de app do Spotify renovado");
 		}
 		return appToken;
 	}

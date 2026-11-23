@@ -13,7 +13,7 @@ atmosfera de cada obra, com interpretação por inteligência artificial.
 │   ├── book/         busca de livros (Open Library / Google Books) e livros escolhidos
 │   ├── playlist/     núcleo: geração, prévia, edição, histórico
 │   ├── music/        domínio musical independente de provedor
-│   ├── spotify/      OAuth, busca e criação de playlists na Spotify Web API
+│   ├── spotify/      OAuth, busca e criação de playlists na Web API do Spotify
 │   ├── ai/           interpretação literária e recomendações (OpenAI)
 │   ├── shared/       erros (RFC 9457), criptografia e código transversal
 │   └── config/       configurações do Spring
@@ -43,7 +43,7 @@ npm install
 npm run dev                   # http://127.0.0.1:5173 — /api é encaminhado para a API
 ```
 
-Acesse sempre por **http://127.0.0.1:5173** (não `localhost`): a Spotify só aceita redirect por IP de
+Acesse sempre por **http://127.0.0.1:5173** (não `localhost`): o Spotify só aceita redirect por IP de
 loopback, e o cookie de sessão precisa estar no mesmo host do retorno do OAuth.
 
 Testes do backend usam Testcontainers (Docker precisa estar rodando): `./mvnw test`.
@@ -63,7 +63,7 @@ Testes do backend usam Testcontainers (Docker precisa estar rodando): `./mvnw te
 | POST   | `/api/auth/email/resend`    | sessão   | Envia um novo código (espera de 60 s, até 5 por hora) |
 | PUT    | `/api/auth/email`           | sessão   | Troca o e-mail ainda não confirmado e envia um código para ele |
 | GET    | `/api/spotify/connection`   | sessão   | Estado da conexão Spotify |
-| GET    | `/api/spotify/authorize`    | sessão   | Redireciona para o consentimento da Spotify |
+| GET    | `/api/spotify/authorize`    | sessão   | Redireciona para o consentimento do Spotify |
 | GET    | `/api/spotify/callback`     | público* | Retorno do OAuth; redireciona para o frontend |
 | DELETE | `/api/spotify/connection`   | sessão   | Desconecta e apaga os tokens |
 | GET    | `/api/books/search?q=&by=`  | sessão   | Busca no catálogo (`by`: all, title, author, isbn) |
@@ -122,7 +122,7 @@ Erros seguem a RFC 9457 (`application/problem+json`) com um campo `code` estáve
   Só entram na playlist faixas cujo título **e** artista batem; sufixos como "Remastered" são ignorados, versões
   ao vivo/remix só valem se a sugestão pedir. Sugestões sem correspondência aparecem como "não encontradas".
 - Usa o token do próprio app (Client Credentials), então funciona mesmo para quem não conectou o Spotify.
-  A documentação da Spotify não detalha esse fluxo em Development Mode; se a busca for recusada, a playlist fica
+  A documentação do Spotify não detalha esse fluxo em Development Mode; se a busca for recusada, a playlist fica
   pronta com as sugestões não verificadas e pode ser verificada de novo.
 - Limites de Development Mode respeitados: no máximo 10 resultados por busca, poucas buscas em paralelo,
   `Retry-After` em 429. Playlists são criadas com `POST /me/playlists` e preenchidas com `/playlists/{id}/items`.
@@ -164,7 +164,7 @@ No plano gratuito a URL muda a cada `ngrok http`; reserve o domínio estático g
 https://dashboard.ngrok.com/domains e rode `ngrok http --url=<seu-dominio> 127.0.0.1:5173` para não precisar
 atualizar o Spotify toda vez. O Vite já aceita hosts `*.ngrok-free.app`, `*.ngrok-free.dev`, `*.ngrok.app` e `*.ngrok.dev`.
 
-> Em Development Mode, a Spotify permite no máximo 5 usuários cadastrados manualmente.
+> Em Development Mode, o Spotify permite no máximo 5 usuários cadastrados manualmente.
 > Por isso, conectar o Spotify é opcional no Resten: só é exigido para salvar a playlist na conta.
 
 ### Configurando o Google Books (opcional)
