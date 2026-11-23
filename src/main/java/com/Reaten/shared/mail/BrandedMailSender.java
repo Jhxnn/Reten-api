@@ -38,7 +38,19 @@ public class BrandedMailSender {
 
 	BrandedMailSender(JavaMailSender mailSender, RetenProperties properties) {
 		this.mailSender = mailSender;
-		this.from = properties.mail().from();
+		this.from = unquote(properties.mail().from());
+	}
+
+	/**
+	 * O .env é lido como .properties, onde aspas fazem parte do valor: {@code "Resten <a@b.com>"} chegaria
+	 * com as aspas e o Gmail recusaria o remetente (555 5.5.2). Aspas em volta do valor inteiro são removidas.
+	 */
+	static String unquote(String value) {
+		String trimmed = value.strip();
+		if (trimmed.length() >= 2 && trimmed.startsWith("\"") && trimmed.endsWith("\"") && trimmed.contains("<")) {
+			return trimmed.substring(1, trimmed.length() - 1).strip();
+		}
+		return trimmed;
 	}
 
 	/** O destaque do e-mail: um código para digitar ou um botão com link. */
