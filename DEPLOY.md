@@ -71,6 +71,8 @@ Faça na ordem abaixo. Os deploys usam a branch `main` dos dois repositórios.
 | `SPOTIFY_CLIENT_SECRET` | do painel do Spotify |
 | `SPOTIFY_REDIRECT_URI` | `https://<endereço-da-vercel>/api/spotify/callback` |
 | `GOOGLE_BOOKS_API_KEY` | opcional |
+| `RETEN_ADMIN_EMAIL` | e-mail da conta de administrador (área `/admin`) |
+| `RETEN_ADMIN_PASSWORD` | senha forte e diferente da local; a conta é criada na primeira subida |
 
    Os valores são os mesmos do seu `.env` local, menos banco, endereços e `RETEN_COOKIE_SECURE`.
    Não defina `PORT`: o Render cuida dela.

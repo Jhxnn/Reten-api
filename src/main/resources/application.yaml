@@ -77,6 +77,11 @@ reten:
     max-attempts: 5
     resend-after: 60s
     max-per-hour: 5
+  # Conta de administrador criada ao subir a API (num banco novo ou se ainda não existir).
+  # Sem as duas variáveis, nenhuma conta é criada. Em produção, use uma senha forte e própria.
+  admin:
+    email: ${RETEN_ADMIN_EMAIL:}
+    password: ${RETEN_ADMIN_PASSWORD:}
   mail:
     from: ${RETEN_MAIL_FROM:Resten <nao-responda@reten.local>}
   openai:

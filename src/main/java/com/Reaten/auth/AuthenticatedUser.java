@@ -21,17 +21,22 @@ public final class AuthenticatedUser implements UserDetails, CredentialsContaine
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private static final List<GrantedAuthority> AUTHORITIES = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+	private static final List<GrantedAuthority> USER = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+	private static final List<GrantedAuthority> ADMIN = List.of(
+			new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN"));
 
 	private final UUID id;
 	private final String name;
 	private final String email;
+	/** Sessões criadas antes do papel existir voltam como false (campo novo na serialização). */
+	private final boolean admin;
 	private String passwordHash;
 
 	AuthenticatedUser(User user) {
 		this.id = user.getId();
 		this.name = user.getName();
 		this.email = user.getEmail();
+		this.admin = user.isAdmin();
 		this.passwordHash = user.getPasswordHash();
 	}
 
@@ -49,7 +54,7 @@ public final class AuthenticatedUser implements UserDetails, CredentialsContaine
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return AUTHORITIES;
+		return admin ? ADMIN : USER;
 	}
 
 	@Override

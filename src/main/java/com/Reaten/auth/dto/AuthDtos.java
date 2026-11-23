@@ -61,6 +61,6 @@ public final class AuthDtos {
 	}
 
 	/** @param emailVerified falso até o código enviado por e-mail ser digitado; o app fica bloqueado enquanto isso */
-	public record CurrentUserResponse(UUID id, String name, String email, boolean emailVerified) {
+	public record CurrentUserResponse(UUID id, String name, String email, boolean emailVerified, boolean admin) {
 	}
 }

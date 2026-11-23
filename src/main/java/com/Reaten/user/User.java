@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -32,6 +34,14 @@ public class User {
 	@Column(name = "email_verified_at")
 	private Instant emailVerifiedAt;
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 20)
+	private UserRole role = UserRole.USER;
+
+	/** Atualizado no login e, durante o uso, no máximo uma vez por hora. */
+	@Column(name = "last_seen_at")
+	private Instant lastSeenAt;
+
 	protected User() {
 	}
 
@@ -57,6 +67,22 @@ public class User {
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.createdAt = Instant.now();
+	}
+
+	public boolean isAdmin() {
+		return role == UserRole.ADMIN;
+	}
+
+	public void promoteToAdmin() {
+		this.role = UserRole.ADMIN;
+	}
+
+	public UserRole getRole() {
+		return role;
+	}
+
+	public Instant getLastSeenAt() {
+		return lastSeenAt;
 	}
 
 	public void changePassword(String newPasswordHash) {

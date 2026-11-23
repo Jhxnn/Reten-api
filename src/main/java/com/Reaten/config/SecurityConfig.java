@@ -1,5 +1,6 @@
 package com.Reaten.config;
 
+import java.time.Clock;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -25,9 +26,11 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 
+import com.Reaten.auth.LastSeenFilter;
 import com.Reaten.auth.emailverification.EmailVerificationFilter;
 import com.Reaten.auth.emailverification.EmailVerificationService;
 import com.Reaten.shared.security.ProblemJsonAuthenticationEntryPoint;
+import com.Reaten.user.UserRepository;
 
 /**
  * Segurança baseada em sessão no servidor (Spring Session JDBC) com cookie HttpOnly.
@@ -36,6 +39,7 @@ import com.Reaten.shared.security.ProblemJsonAuthenticationEntryPoint;
  * <li>Login/cadastro são endpoints JSON próprios; a sessão é criada por {@link com.Reaten.auth.SessionAuthenticator}.</li>
  * <li>Respostas 401 em JSON, nunca redirecionamento para página de login.</li>
  * <li>Contas com e-mail não confirmado só alcançam {@code /api/auth/**} ({@link EmailVerificationFilter}).</li>
+ * <li>{@code /api/admin/**} exige o papel ADMIN.</li>
  * </ul>
  */
 @Configuration
@@ -45,7 +49,7 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityContextRepository securityContextRepository,
-			EmailVerificationService emailVerification, RetenProperties properties) throws Exception {
+			EmailVerificationService emailVerification, RetenProperties properties, UserRepository users) throws Exception {
 		http
 				.csrf(csrf -> csrf.spa())
 				.authorizeHttpRequests(auth -> auth
@@ -59,6 +63,7 @@ public class SecurityConfig {
 								"/api/spotify/callback",
 								"/actuator/health").permitAll()
 						.requestMatchers("/error").permitAll()
+						.requestMatchers("/api/admin/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
 				.securityContext(context -> context.securityContextRepository(securityContextRepository))
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(new ProblemJsonAuthenticationEntryPoint()))
@@ -68,6 +73,7 @@ public class SecurityConfig {
 						.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
 				.addFilterAfter(new EmailVerificationFilter(emailVerification, properties.emailVerification().required()),
 						AuthorizationFilter.class)
+				.addFilterAfter(new LastSeenFilter(users, Clock.systemUTC()), EmailVerificationFilter.class)
 				.requestCache(cache -> cache.disable())
 				.formLogin(AbstractHttpConfigurer::disable)
 				.httpBasic(AbstractHttpConfigurer::disable);

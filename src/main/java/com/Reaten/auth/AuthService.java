@@ -102,6 +102,6 @@ public class AuthService {
 	}
 
 	private static CurrentUserResponse toResponse(User user) {
-		return new CurrentUserResponse(user.getId(), user.getName(), user.getEmail(), user.isEmailVerified());
+		return new CurrentUserResponse(user.getId(), user.getName(), user.getEmail(), user.isEmailVerified(), user.isAdmin());
 	}
 }
