@@ -2,6 +2,8 @@ package com.Reaten.admin;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -70,9 +72,10 @@ class AdminEmailConfirmationIntegrationTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.emailVerified").value(true));
 
-		// Repetir não dá erro.
+		// Repetir não dá erro nem manda as boas-vindas de novo.
 		mvc.perform(post("/api/admin/users/" + readerId + "/email-verification").with(csrf()).cookie(admin))
 				.andExpect(status().isNoContent());
+		verify(mailer, times(1)).sendWelcome(eq("sem.codigo@exemplo.com"), any());
 	}
 
 	@Test
@@ -87,6 +90,7 @@ class AdminEmailConfirmationIntegrationTest {
 		mvc.perform(post("/api/admin/users/" + UUID.randomUUID() + "/email-verification").with(csrf()).cookie(admin))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.code").value("user_not_found"));
+		verify(mailer, never()).sendWelcome(any(), any());
 	}
 
 	private Cookie login(String email, String password) throws Exception {

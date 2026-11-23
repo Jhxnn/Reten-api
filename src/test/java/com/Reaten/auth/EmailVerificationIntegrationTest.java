@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -63,10 +64,12 @@ class EmailVerificationIntegrationTest {
 				.andExpect(jsonPath("$.code").value("invalid_verification_code"))
 				.andExpect(jsonPath("$.detail").value("Código incorreto. Restam 4 tentativas."));
 
+		verify(mailer, never()).sendWelcome(anyString(), anyString());
 		verifyCode(session, code)
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.emailVerified").value(true));
 		mvc.perform(get("/api/library").cookie(session)).andExpect(status().isOk());
+		verify(mailer).sendWelcome("confirmar@exemplo.com", "Leitora");
 	}
 
 	@Test

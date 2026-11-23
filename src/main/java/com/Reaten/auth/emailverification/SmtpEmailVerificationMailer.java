@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.Reaten.config.RetenProperties;
 import com.Reaten.shared.mail.BrandedMailSender;
+import com.Reaten.shared.mail.BrandedMailSender.Button;
 import com.Reaten.shared.mail.BrandedMailSender.Code;
 import com.Reaten.shared.mail.BrandedMailSender.Message;
 
@@ -19,10 +20,12 @@ class SmtpEmailVerificationMailer implements EmailVerificationMailer {
 
 	private final BrandedMailSender mail;
 	private final long minutes;
+	private final String booksUrl;
 
 	SmtpEmailVerificationMailer(BrandedMailSender mail, RetenProperties properties) {
 		this.mail = mail;
 		this.minutes = properties.emailVerification().codeTtl().toMinutes();
+		this.booksUrl = properties.frontendUrl().replaceAll("/+$", "") + "/livros";
 	}
 
 	@Async
@@ -40,6 +43,25 @@ class SmtpEmailVerificationMailer implements EmailVerificationMailer {
 					"Se você não criou uma conta no Resten, ignore este e-mail. Nenhuma conta será ativada sem o código."));
 		} catch (MailException ex) {
 			log.error("Falha ao enviar o código de confirmação de e-mail: {}", ex.getMessage());
+		}
+	}
+
+	@Async
+	@Override
+	public void sendWelcome(String toEmail, String recipientName) {
+		try {
+			mail.send(new Message(
+					toEmail,
+					"Sua conta no Resten está pronta",
+					"Seu e-mail foi confirmado. Escolha um livro e descubra a trilha sonora dele.",
+					recipientName,
+					"Seu e-mail foi confirmado e sua conta no Resten está pronta. Escolha um livro, diga como quer ouvir "
+							+ "e receba uma playlist com músicas que combinam com a história, cada uma com o motivo da escolha.",
+					new Button("Escolher um livro", booksUrl),
+					"Quando quiser levar uma playlist para o seu celular, conecte o Spotify pelo próprio Resten e salve com um clique.",
+					"Você recebeu este e-mail porque criou uma conta no Resten com este endereço."));
+		} catch (MailException ex) {
+			log.error("Falha ao enviar o e-mail de boas-vindas: {}", ex.getMessage());
 		}
 	}
 }

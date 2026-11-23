@@ -88,6 +88,7 @@ public class EmailVerificationService {
 		current.markUsed(now);
 		user.markEmailVerified(now);
 		log.info("E-mail confirmado para o usuário {}", userId);
+		mailer.sendWelcome(user.getEmail(), user.getName());
 		return user;
 	}
 
@@ -127,6 +128,7 @@ public class EmailVerificationService {
 		codes.invalidatePending(userId, now);
 		user.markEmailVerified(now);
 		log.info("E-mail do usuário {} confirmado pelo administrador {}", userId, adminId);
+		mailer.sendWelcome(user.getEmail(), user.getName());
 		return true;
 	}
 
