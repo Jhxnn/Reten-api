@@ -110,6 +110,26 @@ public class EmailVerificationService {
 		return user;
 	}
 
+	/**
+	 * Confirmação feita pelo administrador, sem código: o leitor passa a usar o app na próxima requisição
+	 * (o filtro consulta o banco enquanto o e-mail está pendente). Os códigos ainda abertos deixam de valer.
+	 *
+	 * @return false se o e-mail já estava confirmado
+	 */
+	@Transactional
+	public boolean confirmByAdmin(UUID userId, UUID adminId) {
+		User user = users.findById(userId)
+				.orElseThrow(() -> ApiException.notFound("user_not_found", "Usuário não encontrado."));
+		if (user.isEmailVerified()) {
+			return false;
+		}
+		Instant now = Instant.now();
+		codes.invalidatePending(userId, now);
+		user.markEmailVerified(now);
+		log.info("E-mail do usuário {} confirmado pelo administrador {}", userId, adminId);
+		return true;
+	}
+
 	public boolean isVerified(UUID userId) {
 		return users.existsByIdAndEmailVerifiedAtIsNotNull(userId);
 	}
